@@ -1,0 +1,13 @@
+{
+  "name": "llenon/olt-information",
+  "autoload": {
+    "psr-4": {
+      "LLENON\\OltInformation\\": "src/"
+    }
+  },
+  "require": {
+    "graze/telnet-client": "^2.3",
+    "symfony/var-dumper": "^5.4",
+    "meklis/console-client": "^0.0.3"
+  }
+}
