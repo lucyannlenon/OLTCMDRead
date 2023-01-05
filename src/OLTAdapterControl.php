@@ -25,7 +25,9 @@
             $oltAdapter = $this->getOltAdapter();
 
 
-            return $oltAdapter->getDadosDoCliente();
+            $client = $oltAdapter->getDadosDoCliente();
+            $client->setOltNome($this->OLT->nome);
+            return $client;
         }
 
         private function getOltAdapter()

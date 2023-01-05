@@ -13,6 +13,8 @@
 
         public $port;
 
+        public $nome;
+
         public $serviceCommunication;
 
         /**
@@ -22,8 +24,9 @@
          * @param $ip
          * @param $port
          * @param $typeConnection
+         * @param $nome
          */
-        public function __construct($user, $pw, $model, $ip, $port, $typeConnection)
+        public function __construct($user, $pw, $model, $ip, $port, $typeConnection, $nome)
         {
             $this->userName = $user;
             $this->password = $pw;
@@ -31,6 +34,7 @@
             $this->ip = $ip;
             $this->port = $port;
             $this->serviceCommunication = $typeConnection;
+            $this->nome = $nome;
         }
 
 

@@ -25,6 +25,8 @@
          */
         public $onuTemperatura="None";
 
+        public $oltNome="" ;
+
 
 
         /**
@@ -38,6 +40,15 @@
             $this->macAddress = $macAddress;
             $this->gponName = $gponName;
         }
+
+        /**
+         * @param string $oltNome
+         */
+        public function setOltNome(string $oltNome): void
+        {
+            $this->oltNome = $oltNome;
+        }
+
 
         /**
          * @return mixed
