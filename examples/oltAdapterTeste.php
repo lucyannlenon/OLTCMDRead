@@ -17,6 +17,3 @@
     $oltAdapter = new \LLENON\OltInformation\OLTAdapterControl($olt, $client);
     dd($oltAdapter->getDadosDoCliente());
 
-
-
-    // echo $conn->exec("show onu opm-diag pon 2,16");
