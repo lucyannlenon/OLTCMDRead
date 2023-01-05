@@ -1,13 +1,15 @@
 <?php
 
-    namespace LLENON\OltInformation;
+    namespace LLENON\OltInformation\Adapters;
 
+    use LLENON\OltInformation\Console;
     use LLENON\OltInformation\DTO\Client;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
+    use LLENON\OltInformation\OltInterfaces;
 
-    class OltFiberHomeCmdOLDVERSION implements OltInterfaces\OnuDataInterface
+    class OltFiberHomeCmd implements OltInterfaces\OnuDataInterface
     {
 
         /**
@@ -22,7 +24,12 @@
             $conn = OltModel::getSerive($oltModel->serviceCommunication);
             $conn->setDeviceHelper(OltModel::getHelper($oltModel->model));
             $conn->connect($oltModel->ip, $oltModel->port);
-            $conn->login($oltModel->userName, $oltModel->password);
+
+            try {
+                $conn->login($oltModel->userName, $oltModel->password);
+            }catch (\Exception $exception){
+                $conn->login($oltModel->userName, $oltModel->password);
+            }
 
             $conn->exec("EN", true, 'EN');
             $conn->exec($oltModel->password);
@@ -35,7 +42,7 @@
         public function getDadosDoCliente(): Client
         {
             // entra no onu card
-            $this->conn->exec("cd gpononu");
+            $this->conn->exec("cd onu");
 
             $this->findOnu();
 
@@ -43,13 +50,14 @@
 
             $this->setSinalAndTemperatureOnu();
 
+
             $this->clear();
 
             $this->setDistance();
 
             $this->clear();
 
-             $this->setUpTime();
+            $this->setUpTime();
 
 
             return $this->clientModel;
@@ -71,7 +79,6 @@
         {
 
             $outputLines = $this->conn->exec("show onu-authinfo phy-id {$this->clientModel->gponName}");
-
 
             if (!preg_match('/ONU:\s+?(?P<slot>\d+)-(?P<pon>\d+)-(?P<onuPosition>\d+)/', $outputLines, $output_array)) {
                 throw new ClienteNotFund("Onu não encontrada!");
@@ -104,7 +111,7 @@
          */
         public function setSinalAndTemperatureOnu()
         {
-            $cmd = "show optic_module slot {$this->clientModel->slot} link {$this->clientModel->pon} onu {$this->clientModel->onuPosition}";
+            $cmd = "show optic_module slot {$this->clientModel->slot} pon {$this->clientModel->pon} onu {$this->clientModel->onuPosition}";
             $input_line = $this->conn->exec($cmd);
 
             if (preg_match('/TEMPERATURE\s+?:\s+?(?P<temperature>\d+.\d+)/i', $input_line, $output_array)) {
@@ -113,6 +120,9 @@
 
             if (preg_match('/RECV POWER\s+?:\s+?(?P<sinal>-\d+.\d+)/', $input_line, $output_array)) {
                 $this->clientModel->signal = $output_array['sinal'];
+                $this->clientModel->status = "Online";
+            } else {
+                $this->clientModel->status = "Offline";
             }
         }
 
@@ -123,7 +133,7 @@
          */
         private function setDistance()
         {
-            $cmd = "show rtt_value slot {$this->clientModel->slot} link {$this->clientModel->pon} onu {$this->clientModel->onuPosition}";
+            $cmd = "show rtt_value slot {$this->clientModel->slot} pon {$this->clientModel->pon} onu {$this->clientModel->onuPosition}";
 
             $result = $this->conn->exec($cmd);
             if (preg_match('/.*=(?P<distance>.*)/', $result, $output_array)) {
@@ -136,7 +146,9 @@
          */
         public function setUpTime()
         {
-            $cmd = "show onu_last_on_and_off_time slot {$this->clientModel->slot}  link {$this->clientModel->pon} onu {$this->clientModel->onuPosition} ";
+            if ($this->clientModel->status === "Offline")
+                return;
+            $cmd = "show onu_last_on_and_off_time slot {$this->clientModel->slot}  pon {$this->clientModel->pon} onu {$this->clientModel->onuPosition} ";
             $input_line = $this->conn->exec($cmd);
             if (preg_match('/Last On Time.*=(?P<lastOnTime>.*)./', $input_line, $output_array)) {
                 $date = new \DateTime('now');

@@ -1,13 +1,14 @@
 <?php
 
-    namespace LLENON\OltInformation;
+    namespace LLENON\OltInformation\Adapters;
 
     use LLENON\OltInformation\DTO\Client;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
+    use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
 
-    class VSolOLTCmd
+    class VSolOLTCmd implements OnuDataInterface
     {
 
         /**
@@ -40,7 +41,7 @@
         }
 
 
-        public function getDadosDoCliente()
+        public function getDadosDoCliente():Client
         {
             $this->setStatusToClient();
             $this->setSignalClient();
@@ -105,7 +106,7 @@
 
             $this->clientModel->slot = $matches['slot'];
             $this->clientModel->pon = $matches['pon'];
-            $this->clientModel->onuId = $matches['onuId'];
+            $this->clientModel->onuPosition = $matches['onuId'];
 
         }
 
@@ -125,7 +126,7 @@
              * ------      --------------    -----------------   -------------------   -------------   -------------\n
              * EPON0/2:1   27.45             3.40                14.20                 2.09            -15.97\n
              */
-            $data = $this->conn->exec("show onu opm-diag pon {$this->clientModel->pon},{$this->clientModel->onuId}");
+            $data = $this->conn->exec("show onu opm-diag pon {$this->clientModel->pon},{$this->clientModel->onuPosition}");
 
             $dataStringToLines = explode("\n", $data);
             $result = $this->getDadosDoSinalEmArray($dataStringToLines);
@@ -143,7 +144,7 @@
                          * probali result
                          * EPON0/2:29  42.91             3.26                27.54                 2.22            -20.97
                          */
-            $regex = "/[A-Za-z]+{$this->clientModel->slot}\/{$this->clientModel->pon}:{$this->clientModel->onuId}/";
+            $regex = "/[A-Za-z]+{$this->clientModel->slot}\/{$this->clientModel->pon}:{$this->clientModel->onuPosition}/";
             $findString = preg_grep($regex, $dataStringToLines);
             $findString = array_values($findString);
             $result = explode(" ", $findString[0]);

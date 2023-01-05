@@ -6,8 +6,11 @@
     }
   },
   "require": {
+    "php": "^7.4",
     "graze/telnet-client": "^2.3",
     "symfony/var-dumper": "^5.4",
-    "meklis/console-client": "^0.0.3"
+    "meklis/console-client": "^0.0.3",
+    "ext-ssh2": "*"
   }
 }
+

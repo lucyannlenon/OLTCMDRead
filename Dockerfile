@@ -1,5 +1,5 @@
 # Base image
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
@@ -60,17 +60,22 @@ RUN docker-php-ext-enable amqp
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
 
-COPY 90-xdebug.ini "${PHP_INI_DIR}/conf.d"
+RUN apt install -y  wget  libssh2-1-dev  libssh2-1
+#
+#RUN pecl install ssh2
+#RUN docker-php-ext-enable ssh2
+#
+#COPY 90-xdebug.ini "${PHP_INI_DIR}/conf.d"
 
 ## teste
-RUN apt install -y  wget  libssh2-1-dev  libssh2-1
 
-RUN wget https://pecl.php.net/get/ssh2-1.2.tgz
 
-RUN  tar -xzf ssh2-1.2.tgz && rm -rf ssh2-1.2.tgz &&  cd ssh2-1.2 && phpize \
-     && ./configure && make && make install  && cd .. &&  rm -rf ssh2-1.2
+RUN wget https://pecl.php.net/get/ssh2-1.3.tgz && mv ssh2-1.3.tgz /tmp/ssh2-1.2.tgz
+
+RUN cd /tmp/ && tar -xzf ssh2-1.2.tgz && rm -rf ssh2-1.2.tgz
+#
+RUN  cd /tmp/ssh2-1.3 && phpize \
+     && ./configure && make && make install  && cd .. &&  rm -rf ssh2-1.3
 
 RUN echo "extension=ssh2.so" > ${PHP_INI_DIR}/conf.d/docker-php-ext-ssh2.ini
-
-
 

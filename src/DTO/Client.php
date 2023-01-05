@@ -10,7 +10,7 @@
         public $gponName;
 
         public $slot;
-        public $onuId;
+        public $onuPosition;
 
         public $pon;
         public $signal;
@@ -23,7 +23,7 @@
         /**
          * @var mixed|string
          */
-        public $onuTemperatura;
+        public $onuTemperatura="None";
 
 
 

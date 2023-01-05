@@ -5,10 +5,10 @@
     $userName = 'xxx';
     $password = 'xxx';
     $address = '192.168.x.x';
-    $tipoConnection = "telnet";
+    $typoConnection = "telnet";
     $model = OltModel::VSOL;
     $port = 23;
-    $olt = new OLT($userName, $password, $model, $address, $port, $tipoConnection);
+    $olt = new OLT($userName, $password, $model, $address, $port, $typoConnection);
     $macAddress = "xx:xx:xx:xx:xx:xx";
     $login = "teste";
     $gponName = "testeteste";
