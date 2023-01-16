@@ -11,5 +11,6 @@
         'port' => 23,
         'macAddress' => "00:d2:9b:03:12:19",
         'login' => "teste",
-        'gponName' => "MONU00bff2d9"
+        'gponName' => "MONU00bff2d9",
+        'oltName'
     ];

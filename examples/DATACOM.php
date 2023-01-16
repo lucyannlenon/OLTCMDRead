@@ -8,7 +8,7 @@
     $config = include __DIR__ . "/config/datacom.php";
 
 
-    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection']);
+    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'],$config['oltName']);
     // comando inicial
     // show interface gpon onu | match-all MONU006C2781
 

@@ -10,7 +10,7 @@
     $config = include __DIR__ . "/config/vsol.php";
 
 
-    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'], $config['oltNome']);
+    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'], $config['oltName']);
     $client = new Client($config['login'], $config['macAddress'], $config['gponName']);
 
 
