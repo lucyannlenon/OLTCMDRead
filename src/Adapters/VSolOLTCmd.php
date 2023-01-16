@@ -41,7 +41,7 @@
         }
 
 
-        public function getDadosDoCliente():Client
+        public function getDadosDoCliente(): Client
         {
             $this->setStatusToClient();
             $this->setSignalClient();
@@ -68,10 +68,10 @@
             $macAddress = $this->getMacAddress();
             $data = $this->conn->exec("show onu status {$macAddress}");
 
-            $item = preg_grep("/{$this->clientModel->macAddress}/", explode("\n", $data));
+            $item = preg_grep("/{$this->clientModel->macAddress}/", explode("\n", strtoupper($data)));
 
             // reorganisa os dados para reposicionar o array
-            sort($item);
+            $item = array_values($item);
 
             if (empty($item)) {
                 throw  new ClienteNotFund("Invalid client {$this->clientModel->login}");

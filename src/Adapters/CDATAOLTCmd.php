@@ -44,7 +44,7 @@
          * @return Client
          * @throws ClienteNotFund
          */
-        public function getDadosDoCliente():Client
+        public function getDadosDoCliente(): Client
         {
 
             $this->pesquisaDadosIniciaisDoCliente();
@@ -78,7 +78,7 @@
 -----------------------------------------------------------------------------
              */
             $input_lines = $this->conn->exec($cmd);
-            $retorno = preg_grep("/{$this->clientModel->getMacAddress()}/", explode("\n", $input_lines));
+            $retorno = preg_grep("/{$this->clientModel->getMacAddress()}/", explode("\n", strtoupper($input_lines)));
 
             $retorno = array_values($retorno);
             if (empty($retorno)) {

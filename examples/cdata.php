@@ -9,7 +9,7 @@
     $config = include __DIR__ . "/config/cdata.php";
 
 
-    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection']);
+    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'],$config['nome']);
     $client = new Client($config['login'], $config['macAddress'], $config['gponName']);
 
 

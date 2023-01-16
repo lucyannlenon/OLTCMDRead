@@ -7,10 +7,10 @@
     include __DIR__ . "/../vendor/autoload.php";
 
 
-    $config = include __DIR__ . "/config/fiberhomeold.php";
+    $config = include __DIR__ . "/config/vsol.php";
 
 
-    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection']);
+    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'], $config['oltNome']);
     $client = new Client($config['login'], $config['macAddress'], $config['gponName']);
 
 
