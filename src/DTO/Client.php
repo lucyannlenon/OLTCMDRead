@@ -26,7 +26,7 @@
         public $onuTemperatura="None";
 
         public $oltNome="" ;
-
+        public Ethernet $ethernet;
 
 
         /**

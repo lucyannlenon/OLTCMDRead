@@ -3,6 +3,7 @@
     namespace LLENON\OltInformation\Adapters;
 
     use LLENON\OltInformation\DTO\Client;
+    use LLENON\OltInformation\DTO\Ethernet;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
@@ -156,7 +157,8 @@
             $this->setSignalClient();
 
             $this->setUptime();
-            return;
+
+            $this->setEthenetStatus();
 
 
         }
@@ -230,5 +232,32 @@
 
             $this->clientModel->uptime = "Alive time not found.";
 
+        }
+
+        private function setEthenetStatus()
+        {
+            $cmd = "show  onu {$this->clientModel->onuPosition} eth 1";
+
+            $string = $this->conn->exec($cmd);
+
+            $string = str_replace("\n\e[30C", "", $string);
+
+            $patterns = [
+                'speed' => 'Speed status:\s+?(\S+)',
+                'status' => 'Operate status:\s+?(\S+)',
+                'speedConfig' => 'Speed config:\s+?(\S+)',
+                'loopStatus' => 'Ethernet loop:\s+?(\S+)'
+            ];
+
+
+            $data = [];
+            foreach ($patterns as $k => $pattern) {
+                $matches = [];
+                preg_match('/' . $pattern . '/', $string, $matches);
+
+                $data[$k] = $matches[1];
+            }
+
+            $this->clientModel->ethernet = Ethernet::createFromArray($data);
         }
     }
