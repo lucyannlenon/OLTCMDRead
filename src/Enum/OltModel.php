@@ -7,6 +7,7 @@
     use LLENON\OltInformation\Adapters\OltFiberHomeCmd;
     use LLENON\OltInformation\Adapters\OltFiberHomeCmdOLDVERSION;
     use LLENON\OltInformation\Adapters\VSolOLTCmd;
+    use LLENON\OltInformation\Adapters\VSolOLTGPONCmd;
     use LLENON\OltInformation\Console\SSH;
     use LLENON\OltInformation\Helpers\DATACOMHelper;
     use LLENON\OltInformation\Helpers\FiberHomeHelper;
@@ -19,6 +20,7 @@
     {
         const CDATA = "CDATA";
         const VSOL = "VSOL";
+        const VSOLGPON = "VSOLGPON";
         const DATACOM = 'DATACOM';
         const FIBERHOMEOLDVERSION = "FIBERHOMEOLDVERSION";
         const FIBERHOME = "FIBERHOME";
@@ -26,6 +28,7 @@
         const ADAPTERS = [
             self::CDATA => CDATAOLTCmd::class,
             self::VSOL => VSolOLTCmd::class,
+            self::VSOLGPON => VSolOLTGPONCmd::class,
             self::DATACOM => DATACOMOLTCmd::class,
             self::FIBERHOME => OltFiberHomeCmd::class,
             self::FIBERHOMEOLDVERSION => OltFiberHomeCmdOLDVERSION::class
@@ -51,6 +54,7 @@
         {
             switch ($helper) {
                 case self::VSOL:
+                case self::VSOLGPON :
                     return new VSolHelper();
                 case self::CDATA:
                     return new Cdata();
