@@ -1,18 +1,19 @@
 <?php
 
-    use LLENON\OltInformation\DTO\Client;
-    use LLENON\OltInformation\DTO\OLT;
+use LLENON\OltInformation\DTO\Client;
+use LLENON\OltInformation\DTO\OLT;
 
-    include __DIR__ . "/../vendor/autoload.php";
-
-    $config = include __DIR__ . "/config/fiberhomeold.php";
+include __DIR__ . "/../vendor/autoload.php";
 
 
-    $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'],$config['oltName']);
+$config = json_decode(file_get_contents(__DIR__ . "/config/fiberhome.json"), TRUE);
 
 
-    $client = new Client($config['login'], $config['macAddress'], $config['gponName']);
+$olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'], $config['oltName']);
 
-    $fiberhome = new \LLENON\OltInformation\Adapters\OltFiberHomeCmdOLDVERSION($olt, $client);
-    dd($fiberhome->getDadosDoCliente());
+
+$client = new Client($config['login'], $config['macAddress'], $config['gponName']);
+
+$fiberhome = new \LLENON\OltInformation\Adapters\OltFiberHomeCmdOLDVERSION($olt, $client);
+dd($fiberhome->getDadosDoCliente());
 
