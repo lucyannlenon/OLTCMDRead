@@ -2,7 +2,9 @@
 
     namespace LLENON\OltInformation\Exceptions;
 
-    class ClienteNotFund extends  \Exception
+    use Exception;
+
+    class ClienteNotFund extends  Exception
     {
 
 

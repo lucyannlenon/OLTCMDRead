@@ -2,20 +2,23 @@
 
     namespace LLENON\OltInformation\Adapters;
 
+    use DateTime;
+    use Exception;
     use LLENON\OltInformation\Console;
     use LLENON\OltInformation\DTO\Client;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
     use LLENON\OltInformation\OltInterfaces;
+    use Meklis\Network\Console\Telnet;
 
     class OltFiberHomeCmd implements OltInterfaces\OnuDataInterface
     {
 
         /**
-         * @var Console\SSH|\Meklis\Network\Console\Telnet
+         * @var Console\SSH|Telnet
          */
-        private $conn;
+        private Console\SSH|Telnet $conn;
         private Client $clientModel;
 
         public function __construct(OLT $oltModel, Client $clientModel)
@@ -27,7 +30,7 @@
 
             try {
                 $conn->login($oltModel->userName, $oltModel->password);
-            }catch (\Exception $exception){
+            }catch (Exception $exception){
                 $conn->login($oltModel->userName, $oltModel->password);
             }
 
@@ -142,7 +145,7 @@
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function setUpTime()
         {
@@ -151,8 +154,8 @@
             $cmd = "show onu_last_on_and_off_time slot {$this->clientModel->slot}  pon {$this->clientModel->pon} onu {$this->clientModel->onuPosition} ";
             $input_line = $this->conn->exec($cmd);
             if (preg_match('/Last On Time.*=(?P<lastOnTime>.*)./', $input_line, $output_array)) {
-                $date = new \DateTime('now');
-                $init = new \DateTime($output_array['lastOnTime']);
+                $date = new DateTime('now');
+                $init = new DateTime($output_array['lastOnTime']);
 
                 $diff = $date->diff($init);
                 $this->clientModel->uptime = $diff->format("%H:%I:%S (Full days: %a)");

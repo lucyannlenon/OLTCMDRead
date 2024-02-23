@@ -6,6 +6,7 @@
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
+    use RuntimeException;
 
     class OLTAdapterControl implements OnuDataInterface
     {
@@ -35,7 +36,7 @@
             $olt = OltModel::ADAPTERS[$this->OLT->model];
 
             if (empty($olt))
-                throw new \RuntimeException("Olt passada {$this->OLT->model} não foi encontrada!");
+                throw new RuntimeException("Olt passada {$this->OLT->model} não foi encontrada!");
 
             return new $olt($this->OLT, $this->client);
         }

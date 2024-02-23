@@ -1,13 +1,13 @@
 {
   "name": "llenon/olt-information",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "autoload": {
     "psr-4": {
       "LLENON\\OltInformation\\": "src/"
     }
   },
   "require": {
-    "php": "^7.4",
+    "php": "^8.1",
     "meklis/console-client": "^0.0.3",
     "ext-ssh2": "*"
   }

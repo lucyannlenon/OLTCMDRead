@@ -2,9 +2,8 @@ version: '3.7'
 
 services:
   php_telnet_teste:
-    build:
-      context: '.'
-    container_name: php_telnettest
+    image: "php-local:1.1"
+    tty: true
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

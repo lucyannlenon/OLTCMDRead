@@ -2,11 +2,15 @@
 
     namespace LLENON\OltInformation\Adapters;
 
+    use DateTime;
     use LLENON\OltInformation\DTO\Client;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
     use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
+    use Meklis\Network\Console\AbstractConsole;
+    use Meklis\Network\Console\SSH;
+    use Meklis\Network\Console\Telnet;
 
     class CDATAOLTCmd implements OnuDataInterface
     {
@@ -14,17 +18,22 @@
         /**
          * @var Client
          */
-        private $clientModel;
+        private Client $clientModel;
         /**
-         * @var \Meklis\Network\Console\AbstractConsole|\Meklis\Network\Console\SSH|\Meklis\Network\Console\Telnet
+         * @var AbstractConsole|SSH|Telnet
          */
-        private $conn;
-        private \DateTime $currentOltTime;
+        private \LLENON\OltInformation\Console\SSH|SSH|Telnet|AbstractConsole $conn;
+        private DateTime $currentOltTime;
 
 
         /**
          * @param OLT $oltModel
          * @param Client $clientModel
+         * @throws \Exception
+         * @throws \Exception
+         * @throws \Exception
+         * @throws \Exception
+         * @throws \Exception
          */
         public function __construct(OLT $oltModel, Client $clientModel)
         {
@@ -43,6 +52,7 @@
         /**
          * @return Client
          * @throws ClienteNotFund
+         * @throws \Exception
          */
         public function getDadosDoCliente(): Client
         {
@@ -147,9 +157,8 @@
 
             if (count($grep) > 0) {
                 foreach ($grep as $line) {
-                    if (preg_match('/ONT distance/', $line)) {
+                    if (str_contains($line, 'ONT distance')) {
                         $this->clientModel->distance = preg_replace('/\D/', '', $grep[0]);
-                        continue;
                     } elseif (preg_match('/Last up time[\s]+?: (?P<bootTime>.*)/', $line, $output_array)) {
                         $this->setUptimeOnu($output_array['bootTime']);
                     }
@@ -186,7 +195,7 @@
             if (count($grep) > 0) {
                 foreach ($grep as $line) {
                     $data = preg_replace('/[^\d.-]/', '', $line);
-                    if (preg_match('/Temperature/', $line)) {
+                    if (str_contains($line, 'Temperature')) {
                         $this->clientModel->onuTemperatura = $data;
                         continue;
 
@@ -201,7 +210,7 @@
         private function setUpTimeOlt()
         {
             $input_line = $this->conn->exec("show time");
-            $botDate = new \DateTime(trim($input_line));
+            $botDate = new DateTime(trim($input_line));
 
             $this->currentOltTime = $botDate;
 
@@ -209,7 +218,7 @@
 
         private function setUptimeOnu(string $bootTime)
         {
-            $date = new \DateTime(trim($bootTime));
+            $date = new DateTime(trim($bootTime));
 
             if (empty($this->currentOltTime))
                 return;

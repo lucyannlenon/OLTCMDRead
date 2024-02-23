@@ -2,6 +2,7 @@
 
     namespace LLENON\OltInformation\Enum;
 
+    use Exception;
     use LLENON\OltInformation\Adapters\CDATAOLTCmd;
     use LLENON\OltInformation\Adapters\DATACOMOLTCmd;
     use LLENON\OltInformation\Adapters\OltFiberHomeCmd;
@@ -37,7 +38,7 @@
         /**
          * @param $service
          * @return SSH|Telnet
-         * @throws \Exception
+         * @throws Exception
          */
         public static function getSerive($service)
         {

@@ -4,28 +4,28 @@
 
     class Client
     {
-        public $login;
-        public $macAddress;
+        public mixed $login;
+        public mixed $macAddress;
 
-        public $gponName;
+        public mixed $gponName;
 
         public $slot;
         public $onuPosition;
 
-        public $pon;
-        public $signal;
-        public $status;
+        public mixed $pon;
+        public mixed $signal;
+        public mixed $status;
         public string $distance;
         /**
          * @var mixed|string
          */
-        public $uptime;
+        public mixed $uptime;
         /**
          * @var mixed|string
          */
-        public $onuTemperatura="None";
+        public mixed $onuTemperatura="None";
 
-        public $oltNome="" ;
+        public string $oltNome="" ;
         public Ethernet $ethernet;
 
 
@@ -61,7 +61,7 @@
         /**
          * @param mixed $login
          */
-        public function setLogin($login)
+        public function setLogin(mixed $login)
         {
             $this->login = $login;
         }
@@ -77,7 +77,7 @@
         /**
          * @param mixed $macAddress
          */
-        public function setMacAddress($macAddress)
+        public function setMacAddress(mixed $macAddress)
         {
             $this->macAddress = $macAddress;
         }
@@ -93,7 +93,7 @@
         /**
          * @param mixed $gponName
          */
-        public function setGponName($gponName)
+        public function setGponName(mixed $gponName)
         {
             $this->gponName = $gponName;
         }
@@ -109,7 +109,7 @@
         /**
          * @param mixed $pon
          */
-        public function setPon($pon)
+        public function setPon(mixed $pon)
         {
             $this->pon = $pon;
         }
@@ -125,7 +125,7 @@
         /**
          * @param mixed $signal
          */
-        public function setSignal($signal)
+        public function setSignal(mixed $signal)
         {
             $this->signal = $signal;
         }
@@ -141,7 +141,7 @@
         /**
          * @param mixed $status
          */
-        public function setStatus($status)
+        public function setStatus(mixed $status)
         {
             $this->status = $status;
         }

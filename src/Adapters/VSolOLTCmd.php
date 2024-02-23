@@ -7,6 +7,9 @@
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
     use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
+    use Meklis\Network\Console\AbstractConsole;
+    use Meklis\Network\Console\SSH;
+    use Meklis\Network\Console\Telnet;
 
     class VSolOLTCmd implements OnuDataInterface
     {
@@ -14,16 +17,21 @@
         /**
          * @var Client
          */
-        private $clientModel;
+        private Client $clientModel;
         /**
-         * @var \Meklis\Network\Console\AbstractConsole|\Meklis\Network\Console\SSH|\Meklis\Network\Console\Telnet
+         * @var AbstractConsole|SSH|Telnet
          */
-        private $conn;
+        private \LLENON\OltInformation\Console\SSH|SSH|Telnet|AbstractConsole $conn;
 
 
         /**
          * @param OLT $oltModel
          * @param Client $clientModel
+         * @throws \Exception
+         * @throws \Exception
+         * @throws \Exception
+         * @throws \Exception
+         * @throws \Exception
          */
         public function __construct(OLT $oltModel, Client $clientModel)
         {
@@ -136,7 +144,7 @@
 
         /**
          * @param $dataStringToLines
-         * @return false|string[]
+         * @return string[]
          */
         private function getDadosDoSinalEmArray($dataStringToLines)
         {
@@ -161,7 +169,6 @@
              *      ]
              */
 
-            $result = array_values($result);
-            return $result;
+            return array_values($result);
         }
     }

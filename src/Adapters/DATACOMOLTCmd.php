@@ -2,11 +2,17 @@
 
     namespace LLENON\OltInformation\Adapters;
 
+    use DateInterval;
+    use DateTime;
+    use Exception;
     use LLENON\OltInformation\DTO\Client;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
     use LLENON\OltInformation\Exceptions\ClienteNotFund;
     use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
+    use Meklis\Network\Console\AbstractConsole;
+    use Meklis\Network\Console\SSH;
+    use Meklis\Network\Console\Telnet;
 
     class DATACOMOLTCmd implements OnuDataInterface
     {
@@ -14,17 +20,22 @@
         /**
          * @var Client
          */
-        private $clientModel;
+        private Client $clientModel;
         /**
-         * @var \Meklis\Network\Console\AbstractConsole|\Meklis\Network\Console\SSH|\Meklis\Network\Console\Telnet
+         * @var AbstractConsole|SSH|Telnet
          */
-        private $conn;
-        private \DateTime $currentOltTime;
+        private \LLENON\OltInformation\Console\SSH|SSH|Telnet|AbstractConsole $conn;
+        private DateTime $currentOltTime;
 
 
         /**
          * @param OLT $oltModel
          * @param Client $clientModel
+         * @throws Exception
+         * @throws Exception
+         * @throws Exception
+         * @throws Exception
+         * @throws Exception
          */
         public function __construct(OLT $oltModel, Client $clientModel)
         {
@@ -41,6 +52,8 @@
         /**
          * @return Client
          * @throws ClienteNotFund
+         * @throws Exception
+         * @throws Exception
          */
         public function getDadosDoCliente(): Client
         {
@@ -105,6 +118,7 @@
          * 1/1/1     15       DB1946450AA0    Up           None
          * @return void
          * @throws ClienteNotFund
+         * @throws Exception
          */
         private function setDadosDaLocalizacaoDaOnu()
         {
@@ -163,14 +177,14 @@
          * Software Download State : None
          * Rx Optical Power [dBm]  : -22.36
          * Tx Optical Power [dBm]  : 2.10
-         * @return array|false|string[]
-         * @throws \Exception
+         * @return array|string[]
+         * @throws Exception
          */
         public function getDadosDaOnu()
         {
-            $time = new \DateTime('now');
+            $time = new DateTime('now');
             $duration = '300';
-            $time->add(new \DateInterval('PT' . $duration . 'S'));
+            $time->add(new DateInterval('PT' . $duration . 'S'));
             $time = $time->getTimestamp();
             $dadosDaOnu = [];
             do {
@@ -184,7 +198,7 @@
                     $dadosDaOnu = array_merge($dadosDaOnu, explode("\n", $input_line));
 
                 usleep(200);
-            } while (!preg_match('/Tx Optical Power/', $input_line));
+            } while (!str_contains($input_line, 'Tx Optical Power'));
 
 
             return array_unique($dadosDaOnu);
@@ -192,7 +206,7 @@
 
         /**
          * @return array|false
-         * @throws \Exception
+         * @throws Exception
          */
         public function searchOnuInOlt()
         {
@@ -200,9 +214,9 @@
             $cmd = "show interface gpon onu";
             $input_line = $this->conn->exec($cmd, true, '--More--|#');
 
-            $time = new \DateTime('now');
+            $time = new DateTime('now');
             $duration = '300';
-            $time->add(new \DateInterval('PT' . $duration . 'S'));
+            $time->add(new DateInterval('PT' . $duration . 'S'));
             $time = $time->getTimestamp();
             while (true) {
 
@@ -215,7 +229,7 @@
 
                 try {
                     $input_line = $this->conn->exec('\r', true, '--More--');
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->conn->exec('\n', true, '#');
                     break;
                 }
@@ -225,7 +239,6 @@
                 }
             }
 
-            $grep = array_values($grep);
-            return $grep;
+            return array_values($grep);
         }
     }

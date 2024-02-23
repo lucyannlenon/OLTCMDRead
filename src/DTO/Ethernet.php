@@ -5,10 +5,10 @@
     class Ethernet
     {
 
-        private $speed;
-        private $loopStatus;
-        private $speedConfig;
-        private $status;
+        private mixed $speed;
+        private mixed $loopStatus;
+        private mixed $speedConfig;
+        private mixed $status;
 
         /**
          * @param $speed
@@ -35,7 +35,7 @@
         /**
          * @param mixed $speed
          */
-        public function setSpeed($speed): void
+        public function setSpeed(mixed $speed): void
         {
             $this->speed = $speed;
         }
@@ -51,7 +51,7 @@
         /**
          * @param mixed $loopStatus
          */
-        public function setLoopStatus($loopStatus): void
+        public function setLoopStatus(mixed $loopStatus): void
         {
             $this->loopStatus = $loopStatus;
         }
@@ -67,7 +67,7 @@
         /**
          * @param mixed $speedConfig
          */
-        public function setSpeedConfig($speedConfig): void
+        public function setSpeedConfig(mixed $speedConfig): void
         {
             $this->speedConfig = $speedConfig;
         }
@@ -83,7 +83,7 @@
         /**
          * @param mixed $status
          */
-        public function setStatus($status): void
+        public function setStatus(mixed $status): void
         {
             $this->status = $status;
         }
