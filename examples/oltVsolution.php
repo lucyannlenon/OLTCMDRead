@@ -7,7 +7,9 @@
     include __DIR__ . "/../vendor/autoload.php";
 
 
-    $config = include __DIR__ . "/config/vsol.php";
+
+
+$config = json_decode(file_get_contents(__DIR__ . "/config/vsol.json"), TRUE);
 
 
     $olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'], $config['oltName']);
@@ -56,7 +58,7 @@
      * <- 1/89       2000:07:09 12:32:55     2000:07:09 12:29:41      25 04:59:44
      */
 
-    $oltVsol = new \LLENON\OltInformation\Adapters\VSolOLTGPONCmd($olt, $client);
+    $oltVsol = new \LLENON\OltInformation\Adapters\VSolOLTCmd($olt, $client);
 
     dd($oltVsol->getDadosDoCliente());
 
