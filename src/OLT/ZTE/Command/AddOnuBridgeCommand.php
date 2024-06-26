@@ -54,7 +54,6 @@ COMMAND;
 
     public function execute(Onu $onu): void
     {
-
         $this->onu = $onu;
         $lines = $this->exec();
         foreach ($lines as $line) {
