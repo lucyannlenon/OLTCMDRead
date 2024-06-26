@@ -27,7 +27,6 @@ service 1 gemport 1 vlan :VLAN:
 vlan port eth_0/1 mode tag vlan :VLAN:
 exit
 exit
-write
 COMMAND;
     private Onu $onu;
 
@@ -53,11 +52,16 @@ COMMAND;
         return $cmd;
     }
 
-    public function execute(Onu $onu)
+    public function execute(Onu $onu): void
     {
 
         $this->onu = $onu;
-        return $this->exec();
+        $lines = $this->exec();
+        foreach ($lines as $line) {
+            if (str_starts_with($line, "%Error")) {
+                throw new \InvalidArgumentException(implode("\n", $lines));
+            }
+        }
     }
 
 
