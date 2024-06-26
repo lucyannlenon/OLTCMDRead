@@ -8,15 +8,23 @@ include __DIR__ . "/../vendor/autoload.php";
 
 $config = json_decode(file_get_contents(__DIR__ . "/config/fiberhome.json"), TRUE);
 
+//ZTEGd3496b67 16/2
+$tl1 = new \LLENON\OltInformation\Connections\TL1Connection($config['address'], $config['tl1Server'], $config['userName'], $config['password']);
 
-$olt = new OLT($config['userName'], $config['password'], $config['model'], $config['address'], $config['port'], $config['typoConnection'], $config['oltName']);
+$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\State($tl1);
 
-
-$client = new Client($config['login'], $config['macAddress'], $config['gponName']);
-
-$fiberhomeOlt = new \LLENON\OltInformation\Adapters\OltFiberHomeCmd($olt, $client);
-dd($fiberhomeOlt->getDadosDoCliente());
+$id = "ZTEGd3496b6f";
 
 
+$onu = new \LLENON\OltInformation\DTO\ONU($id);
+$onu->setOnuType("AN5506-04-B2");
+$onu->setName("lucyann teste");
+$onu->setPon("NA-NA-16-8");
 
-// echo $conn->exec("show onu opm-diag pon 2,16");
+$data = $discoveryOnu->exec([
+    'onu' => $onu,
+    'vlan'=>'100',
+    'username'=>'lucyann.lenon@izi.com.br',
+    'password'=> '123abc'
+]);
+var_dump($data);

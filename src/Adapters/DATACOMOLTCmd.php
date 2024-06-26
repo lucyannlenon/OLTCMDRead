@@ -5,6 +5,7 @@
     use DateInterval;
     use DateTime;
     use Exception;
+    use LLENON\OltInformation\DATACOM\Command\ListOnu;
     use LLENON\OltInformation\DTO\Client;
     use LLENON\OltInformation\DTO\OLT;
     use LLENON\OltInformation\Enum\OltModel;
@@ -240,5 +241,15 @@
             }
 
             return array_values($grep);
+        }
+
+        public function listOnu():array
+        {
+
+
+            $ls = new ListOnu($this->conn);
+
+            $ls->execute();
+            return [] ;
         }
     }
