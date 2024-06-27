@@ -27,7 +27,7 @@ class ListUnAuthorization extends AbstractCommand
 
     }
 
-    public function getCommand(): string
+    protected function getCommand(): string
     {
         return $this->command;
     }

@@ -12,14 +12,14 @@ abstract class AbstractCommand
         protected StringParserInterface $parser
     )
     {
-
+        $this->connection->setTimeout(1);
     }
 
-    public function exec(): array
+    protected function exec(): array
     {
         $string = $this->connection->exec($this->getCommand());
         return $this->parser->parse($string);
     }
 
-    public abstract function getCommand(): string;
+    protected abstract function getCommand(): string;
 }

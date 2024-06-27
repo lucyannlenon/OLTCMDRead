@@ -2,12 +2,14 @@
 
 namespace LLENON\OltInformation\OLT\ZTE;
 
+use LLENON\OltInformation\Connections\ConnectionInterface;
 use LLENON\OltInformation\Connections\SSHConnection;
 use LLENON\OltInformation\DTO\OLT;
+use phpseclib3\Net\SSH2;
 
-class ZTEConnection implements \LLENON\OltInformation\Connections\ConnectionInterface
+class ZTEConnection implements ConnectionInterface
 {
-    private \LLENON\OltInformation\Connections\ConnectionInterface $connection;
+    private ConnectionInterface $connection;
 
     public function __construct(
         private readonly OLT $oltModel
@@ -17,12 +19,21 @@ class ZTEConnection implements \LLENON\OltInformation\Connections\ConnectionInte
     }
 
 
-    public function exec(string $cmd): mixed
+    public function exec(string $cmd): string|bool
     {
         $hostname = "{$this->oltModel->nome}#";
-        $this->getConn()->getConn()->read($hostname);
-        $this->getConn()->getConn()->write("$cmd\n");
-        $read = $this->getConn()->getConn()->read($hostname);
+        $ssh = $this->getConn()->getConn();
+        $ssh->read($hostname);
+        $ssh->write("$cmd\n");
+        $hostname = "#--More--|{$this->oltModel->nome}\##";
+        $read = $ssh->read($hostname, SSH2::READ_REGEX);
+        if (str_contains($read, "--More--")) {
+            do {
+                $ssh->write(" ");
+                $read2 = $ssh->read($hostname);
+                $read .= $read2;
+            } while (str_contains($read2, "--More--"));
+        }
 
         return $this->clearResult($read, $hostname, $cmd);
     }
@@ -50,5 +61,10 @@ class ZTEConnection implements \LLENON\OltInformation\Connections\ConnectionInte
         $data = str_replace($hostname, '', $read);
         $data = str_replace($command, '', $data);
         return trim($data);
+    }
+
+    public function setTimeout(int $int)
+    {
+        $this->getConn()->getConn()->setTimeout($int);
     }
 }

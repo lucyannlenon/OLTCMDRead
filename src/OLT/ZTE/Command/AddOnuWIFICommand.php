@@ -7,13 +7,14 @@ use LLENON\OltInformation\OLT\Dto\Onu;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\EmptyReturnStringParser;
 use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
 
-class AddOnuBridgeCommand extends AbstractCommand
+class AddOnuWIFICommand extends AbstractCommand
 {
     private string $cmd = <<<COMMAND
 conf t
 interface gpon_olt-:PON:
-onu :ONUID: type F601 sn :GEPONID:
+onu :ONUID: type F670L sn :GEPONID:
 exit
+!
 interface gpon_onu-:PON:::ONUID:
 name :USERNAME:
 sn-bind enable sn
@@ -25,7 +26,8 @@ service-port 1 user-vlan  :VLAN: vlan :VLAN:
 !
 pon-onu-mng gpon_onu-:PON:::ONUID:
 service 1 gemport 1 vlan :VLAN:
-vlan port eth_0/1 mode tag vlan :VLAN:
+## LINHA ABAIXO é OPCIONAL
+wan-ip 1 ipv4 mode pppoe username :USERNAME: password :PASSWORD: vlan-profile :VLAN: host 1
 exit
 exit
 COMMAND;
@@ -45,6 +47,7 @@ COMMAND;
             'PON' => $this->onu->getPon(),
             'GEPONID' => $this->onu->getGponId(),
             'USERNAME' => $this->onu->getUsername(),
+            'PASSWORD' => $this->onu->getUsername(),
         ];
         $cmd = $this->cmd;
         foreach ($replaces as $k => $values) {

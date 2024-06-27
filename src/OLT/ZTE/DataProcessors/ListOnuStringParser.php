@@ -2,6 +2,7 @@
 
 namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
 
+use InvalidArgumentException;
 use LLENON\OltInformation\OLT\Dto\Onu;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\StringParserInterface;
 
@@ -38,8 +39,7 @@ class ListOnuStringParser implements StringParserInterface
                 ->setId($matches[2])
                 ->setState($matches[6])
                 ->setOfflineTimes($matches[7])
-                ->setGponId($this->getGponId($matches[5]))
-                ->setGponId($matches[3]);
+                ->setGponId($this->getGponId($matches[5]));
             return $onu;
         }
         return null;
@@ -48,8 +48,8 @@ class ListOnuStringParser implements StringParserInterface
     private function getGponId(string $sn): string
     {
         if (preg_match('/^SN\((\S+)\)$/', $sn, $matches)) {
-            return $matches[0];
+            return $matches[1];
         }
-        throw  new \InvalidArgumentException('Cannot get onuId from ' . $sn);
+        throw  new InvalidArgumentException('Cannot get onuId from ' . $sn);
     }
 }

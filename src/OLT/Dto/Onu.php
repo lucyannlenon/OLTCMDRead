@@ -11,6 +11,8 @@ class Onu
     private string $state;
     private string $id;
     private string $vlan;
+    private string $username;
+    private string $password;
 
     public function getPon(): string
     {
@@ -88,6 +90,29 @@ class Onu
         $this->vlan = $vlan;
         return $this;
     }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): Onu
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): Onu
+    {
+        $this->password = $password;
+        return $this;
+    }
+
 
 
 
