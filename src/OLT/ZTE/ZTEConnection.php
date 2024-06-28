@@ -25,12 +25,12 @@ class ZTEConnection implements ConnectionInterface
         $ssh = $this->getConn()->getConn();
         $ssh->read($hostname);
         $ssh->write("$cmd\n");
-        $hostname = "#--More--|{$this->oltModel->nome}\##";
-        $read = $ssh->read($hostname, SSH2::READ_REGEX);
+        $hostname2 = "#--More--|".preg_quote($this->oltModel->nome)."\##";
+        $read = $ssh->read($hostname2, SSH2::READ_REGEX);
         if (str_contains($read, "--More--")) {
             do {
                 $ssh->write(" ");
-                $read2 = $ssh->read($hostname);
+                $read2 = $ssh->read($hostname2, SSH2::READ_REGEX);
                 $read .= $read2;
             } while (str_contains($read2, "--More--"));
         }

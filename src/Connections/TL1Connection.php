@@ -24,7 +24,8 @@ class TL1Connection implements ConnectionInterface
         }
 
         $this->ipTL1 = $ipTL1;
-        $this->exec("LOGIN:::CTAG::UN={$User},PWD={$Pass};");
+        $ret =  $this->exec("LOGIN:::CTAG::UN={$User},PWD={$Pass};");
+        dd($ret);
         $this->DEBUG = $debug;
     }
 

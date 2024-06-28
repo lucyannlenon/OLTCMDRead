@@ -17,11 +17,13 @@ class ListOnuStringParser implements StringParserInterface
         $results = [];
 
         foreach ($lines as $line) {
+            if (strlen($line) < 30) {
+                continue;
+            }
             if ($this->isLineValid($line)) {
                 $results[] = $this->extractData($line);
             }
         }
-
 
         return $results;
     }

@@ -19,9 +19,8 @@ class NextIdCommand extends ListOnuCommand
         /** @var Onu[] $ret */
         $ret = parent::execute($pon);
         $i = 1;
-
         foreach ($ret as $item) {
-            if ($item->getId() != $i) {
+            if (!empty($item) && $item->getId() != $i) {
                 return $i;
             }
             $i++;

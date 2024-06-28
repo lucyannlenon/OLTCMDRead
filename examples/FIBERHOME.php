@@ -11,7 +11,7 @@ $config = json_decode(file_get_contents(__DIR__ . "/config/fiberhome.json"), TRU
 //ZTEGd3496b67 16/2
 $tl1 = new \LLENON\OltInformation\Connections\TL1Connection($config['address'], $config['tl1Server'], $config['userName'], $config['password']);
 
-$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\State($tl1);
+$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\DiscoveryOnu($tl1);
 
 $id = "ZTEGd3496b6f";
 

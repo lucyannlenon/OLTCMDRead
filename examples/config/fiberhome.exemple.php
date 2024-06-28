@@ -14,3 +14,7 @@
         'gponName' => "MONU00bff2d9",
         'oltName'
     ];
+
+    /*
+     * or .json
+     */
