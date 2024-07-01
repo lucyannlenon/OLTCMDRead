@@ -32,6 +32,7 @@ exit
 exit
 COMMAND;
     private Onu $onu;
+    private int $id;
 
 
     public function __construct(ZTEConnection $connection)
@@ -57,7 +58,7 @@ COMMAND;
         return $cmd;
     }
 
-    public function execute(Onu $onu): void
+    public function execute(Onu $onu): int
     {
         $this->onu = $onu;
         $lines = $this->exec();
@@ -66,6 +67,8 @@ COMMAND;
                 throw new InvalidArgumentException(implode("\n", $lines));
             }
         }
+
+        return $this->id;
     }
 
 
@@ -74,8 +77,11 @@ COMMAND;
      */
     private function getId(): int
     {
+
         $cmd = new NextIdCommand($this->connection);
 
-        return $cmd->execute($this->onu->getPon());
+        $this->id = $cmd->execute($this->onu->getPon());
+
+        return $this->id;
     }
 }
