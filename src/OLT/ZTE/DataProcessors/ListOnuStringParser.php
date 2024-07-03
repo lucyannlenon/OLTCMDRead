@@ -11,12 +11,14 @@ class ListOnuStringParser implements StringParserInterface
 
     public function parse(string $input): array
     {
+
         $lines = explode("\r\n", $input);
         unset($lines[0]);
         unset($lines[1]);
         $results = [];
 
         foreach ($lines as $line) {
+            $line = trim($line);
             if (strlen($line) < 30) {
                 continue;
             }
