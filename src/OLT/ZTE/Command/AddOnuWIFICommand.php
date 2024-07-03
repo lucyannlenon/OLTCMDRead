@@ -27,7 +27,7 @@ service-port 1 user-vlan  :VLAN: vlan :VLAN:
 pon-onu-mng gpon_onu-:PON:::ONUID:
 service 1 gemport 1 vlan :VLAN:
 ## LINHA ABAIXO é OPCIONAL
-wan-ip 1 ipv4 mode pppoe username :USERNAME: password :PASSWORD: vlan-profile :VLAN: host 1
+##wan-ip 1 ipv4 mode pppoe username :USERNAME: password :PASSWORD: vlan-profile :VLAN: host 1
 exit
 exit
 COMMAND;

@@ -21,9 +21,9 @@ $conn = new \LLENON\OltInformation\OLT\ZTE\ZTEConnection($oltModel);
 ##<ListUnAuthorization
 
 ##>NextIdCommand
-//$NextIdCommand = new \LLENON\OltInformation\OLT\ZTE\Command\NextIdCommand($conn);
-//$result =  $NextIdCommand->execute("1/3/1");
-//dd($result);
+$NextIdCommand = new \LLENON\OltInformation\OLT\ZTE\Command\NextIdCommand($conn);
+$result =  $NextIdCommand->execute("1/3/11");
+dd($result);
 ##<NextIdCommand
 
 ##>AddOnuBridgeCommand
@@ -38,15 +38,15 @@ $conn = new \LLENON\OltInformation\OLT\ZTE\ZTEConnection($oltModel);
 ##<AddOnuBridgeCommand
 
 ##>AddOnuWIFICommand
-$onu = new \LLENON\OltInformation\OLT\Dto\Onu();
-$onu->setPon("1/3/1")
-    ->setGponId("ZTEGD34984F3")
-    ->setVlan('100')
-    ->setUsername("lucyann.lenon@izi.com.br")
-    ->setPassword('123abc');
-
-$AddOnuWIFICommand = new \LLENON\OltInformation\OLT\ZTE\Command\AddOnuWIFICommand($conn);
-$AddOnuWIFICommand->execute($onu);
+//$onu = new \LLENON\OltInformation\OLT\Dto\Onu();
+//$onu->setPon("1/3/1")
+//    ->setGponId("ZTEGD34984F3")
+//    ->setVlan('100')
+//    ->setUsername("lucyann.lenon@izi.com.br")
+//    ->setPassword('123abc');
+//
+//$AddOnuWIFICommand = new \LLENON\OltInformation\OLT\ZTE\Command\AddOnuWIFICommand($conn);
+//$AddOnuWIFICommand->execute($onu);
 ##<AddOnuWIFICommand
 
 ##>ListOnuCommand
