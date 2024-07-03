@@ -30,8 +30,9 @@ class ZTEConnection implements ConnectionInterface
         if (str_contains($read, "--More--")) {
             do {
                 $ssh->write(" ");
-                $read2 = $ssh->read($hostname2, SSH2::READ_REGEX);
-                $read .= $read2;
+                $read2 = str_replace("\x08","",$ssh->read($hostname2, SSH2::READ_REGEX));
+
+                $read .= "\r\n".$read2;
             } while (str_contains($read2, "--More--"));
         }
 
