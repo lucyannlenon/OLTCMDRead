@@ -22,7 +22,7 @@ $conn = new \LLENON\OltInformation\OLT\ZTE\ZTEConnection($oltModel);
 
 ##>NextIdCommand
 $NextIdCommand = new \LLENON\OltInformation\OLT\ZTE\Command\NextIdCommand($conn);
-$result =  $NextIdCommand->execute("1/3/11");
+$result =  $NextIdCommand->execute("1/3/7");
 dd($result);
 ##<NextIdCommand
 
