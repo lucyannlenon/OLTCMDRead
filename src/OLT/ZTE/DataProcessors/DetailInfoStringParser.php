@@ -18,6 +18,7 @@ class DetailInfoStringParser implements StringParserInterface
         foreach ($lines as $line) {
             if ($this->isLineValid($line)) {
                 $results['logs'][] = $this->extractData($line);
+
             }
         }
         return $results;
