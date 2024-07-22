@@ -21,9 +21,9 @@ $conn = new \LLENON\OltInformation\OLT\ZTE\ZTEConnection($oltModel);
 ##<ListUnAuthorization
 
 ##>NextIdCommand
-$NextIdCommand = new \LLENON\OltInformation\OLT\ZTE\Command\NextIdCommand($conn);
-$result =  $NextIdCommand->execute("1/3/7");
-dd($result);
+//$NextIdCommand = new \LLENON\OltInformation\OLT\ZTE\Command\NextIdCommand($conn);
+//$result =  $NextIdCommand->execute("1/3/7");
+//dd($result);
 ##<NextIdCommand
 
 ##>AddOnuBridgeCommand
@@ -81,4 +81,9 @@ dd($result);
 //$WanStatusOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\WanStatusOnuCommand($conn);
 //$data =$WanStatusOnuCommand->execute("1/3/1","2");
 //dd($data);
+##<WanStatusOnuCommand
+####>VlanOnuCommand
+$VlanOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\VlanOnuCommand($conn);
+$data =$VlanOnuCommand->execute("1/3/1","1");
+dd($data);
 ##<WanStatusOnuCommand
