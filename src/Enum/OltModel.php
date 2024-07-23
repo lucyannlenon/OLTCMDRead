@@ -12,10 +12,10 @@
     use LLENON\OltInformation\Console\SSH;
     use LLENON\OltInformation\Helpers\DATACOMHelper;
     use LLENON\OltInformation\Helpers\FiberHomeHelper;
+    use LLENON\OltInformation\Helpers\VSolHelper;
     use Meklis\Network\Console\Helpers\Cdata;
     use Meklis\Network\Console\Helpers\DefaultHelper;
     use Meklis\Network\Console\Telnet;
-    use LLENON\OltInformation\Helpers\VSolHelper;
 
     class OltModel
     {

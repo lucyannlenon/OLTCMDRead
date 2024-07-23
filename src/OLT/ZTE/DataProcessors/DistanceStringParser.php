@@ -2,10 +2,6 @@
 
 namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
 
-use InvalidArgumentException;
-use LLENON\OltInformation\OLT\Dto\Onu;
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\StringParserInterface;
-
 class DistanceStringParser implements StringParserInterface
 {
 

@@ -4,14 +4,12 @@ namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
 
 use InvalidArgumentException;
 use LLENON\OltInformation\OLT\Dto\Onu;
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\StringParserInterface;
 
 class ListOnuStringParser implements StringParserInterface
 {
 
     public function parse(string $input): array
     {
-        dump($input);
 
         $lines = explode("\r\n", $input);
         unset($lines[0]);

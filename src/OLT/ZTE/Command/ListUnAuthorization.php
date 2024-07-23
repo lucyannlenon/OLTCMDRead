@@ -5,7 +5,6 @@ namespace LLENON\OltInformation\OLT\ZTE\Command;
 use LLENON\OltInformation\OLT\Dto\Onu;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\ListUnAuthorizedStringParser;
 use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
-use phpseclib3\Crypt\EC\BaseCurves\Binary;
 
 class ListUnAuthorization extends AbstractCommand
 {

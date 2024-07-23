@@ -2,9 +2,6 @@
 
 namespace LLENON\OltInformation\OLT\ZTE\Command;
 
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\EmptyReturnStringParser;
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\SignalStringParser;
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\StringParserInterface;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\VlanStringParser;
 use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
 

@@ -2,6 +2,7 @@
 
 namespace LLENON\OltInformation\OLT\ZTE\Command;
 
+use JetBrains\PhpStorm\NoReturn;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\EmptyReturnStringParser;
 use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
 
@@ -15,7 +16,7 @@ class WanStatusOnuCommand extends AbstractCommand
         parent::__construct($connection, new EmptyReturnStringParser());
     }
 
-    public function execute(string $pon, string $onuId): void
+    #[NoReturn] public function execute(string $pon, string $onuId): void
     {
         $this->onuId = $onuId;
         $this->pon = $pon;

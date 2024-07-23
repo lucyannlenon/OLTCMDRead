@@ -3,9 +3,7 @@
 namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
 
 use LLENON\OltInformation\Exceptions\OltCommandException;
-use LLENON\OltInformation\OLT\Dto\Onu;
 use LLENON\OltInformation\OLT\Dto\OnuEthernet;
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\StringParserInterface;
 
 class EthernetReturnStringParser implements StringParserInterface
 {

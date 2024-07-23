@@ -4,8 +4,6 @@ namespace LLENON\OltInformation\OLT\ZTE\Command;
 
 use Exception;
 use LLENON\OltInformation\OLT\Dto\Onu;
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\ListOnuStringParser;
-use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
 
 class NextIdCommand extends ListOnuCommand
 {

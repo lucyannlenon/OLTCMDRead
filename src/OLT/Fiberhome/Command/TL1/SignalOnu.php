@@ -15,9 +15,7 @@ class SignalOnu extends AbstractTL1Command
         if (!$onu instanceof ONU) {
             throw new \Exception("params with key onu need instance of " . ONU::class);
         }
-        dump(date('Y-m-d H:i:s'));
         $cmd = "LST-OMDDM::OLTID={$this->conn->getIpTL1()},PONID={$onu->getPon()},ONUIDTYPE=MAC,ONUID={$onu->getId()}:CTAG::;";
-        dump($cmd);
         $retCommand = $this->conn->exec($cmd);
         $data = $this->extractInformation($retCommand);
         if (empty($data)) {
