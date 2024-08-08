@@ -16,8 +16,9 @@ class EtherReturnStringParser implements StringParserInterface
     {
 
         // Regular expression to capture the interface name and speed
-        preg_match_all('/Physical interface\s+:\s+([a-z0-9 ]+),.*?Status Negotiation:\s+([0-9]+ Mbit\/s)/is', $input, $matches);
+        preg_match_all('/Physical interface\s+:\s+([a-z0-9 ]+),.*?Status Negotiation:\s+([0-9]+ (Mbit|Gbit)\/s)/is', $input, $matches);
 
+        dump($input);
         // Associative array to store the results
         $result = [];
         for ($i = 0; $i < count($matches[1]); $i++) {
