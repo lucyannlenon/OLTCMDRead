@@ -2,6 +2,7 @@
 
 namespace LLENON\OltInformation\OLT\ZTE\Command;
 
+use LLENON\OltInformation\OLT\Utils\Command\AbstractCommand;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\DistanceStringParser;
 use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
 

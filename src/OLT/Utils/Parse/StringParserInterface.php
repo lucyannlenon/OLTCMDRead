@@ -1,6 +1,6 @@
 <?php
 
-namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
+namespace LLENON\OltInformation\OLT\Utils\Parse;
 
 interface StringParserInterface
 {

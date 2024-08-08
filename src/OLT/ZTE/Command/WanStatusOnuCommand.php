@@ -3,6 +3,7 @@
 namespace LLENON\OltInformation\OLT\ZTE\Command;
 
 use JetBrains\PhpStorm\NoReturn;
+use LLENON\OltInformation\OLT\Utils\Command\AbstractCommand;
 use LLENON\OltInformation\OLT\ZTE\DataProcessors\EmptyReturnStringParser;
 use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
 

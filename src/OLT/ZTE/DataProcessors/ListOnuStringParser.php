@@ -4,6 +4,7 @@ namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
 
 use InvalidArgumentException;
 use LLENON\OltInformation\OLT\Dto\Onu;
+use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
 
 class ListOnuStringParser implements StringParserInterface
 {

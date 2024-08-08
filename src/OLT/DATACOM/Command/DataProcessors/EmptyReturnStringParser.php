@@ -1,6 +1,6 @@
 <?php
 
-namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
+namespace LLENON\OltInformation\OLT\DATACOM\Command\DataProcessors;
 
 use LLENON\OltInformation\Exceptions\OltCommandException;
 use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
@@ -15,9 +15,8 @@ class EmptyReturnStringParser implements StringParserInterface
     public function parse(string $input): array
     {
         $lines = explode("\r\n", $input);
-
         foreach ($lines as $line) {
-            if (str_starts_with($line, "%Error")) {
+            if (str_contains($line, "error:")) {
                 $this->handlerException($input, $line);
             }
         }

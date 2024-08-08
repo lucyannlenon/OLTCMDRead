@@ -1,11 +1,11 @@
 <?php
 
-namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
+namespace LLENON\OltInformation\OLT\DATACOM\Command\DataProcessors;
 
 use LLENON\OltInformation\Exceptions\OltCommandException;
 use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
 
-class EmptyReturnStringParser implements StringParserInterface
+class GetServicePortStringParser implements StringParserInterface
 {
     /**
      * @param string $input
@@ -14,15 +14,12 @@ class EmptyReturnStringParser implements StringParserInterface
      */
     public function parse(string $input): array
     {
-        $lines = explode("\r\n", $input);
+        preg_match('/service-port (\d+)/', $input, $matches);
 
-        foreach ($lines as $line) {
-            if (str_starts_with($line, "%Error")) {
-                $this->handlerException($input, $line);
-            }
+        if (isset($matches[1])) {
+            return [$matches[1]];
         }
-
-        return $lines ?? [];
+        return [];
     }
 
     private function handlerException(string $cause, string $error): void

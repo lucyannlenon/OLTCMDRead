@@ -1,14 +1,16 @@
 <?php
 
-namespace LLENON\OltInformation\OLT\ZTE\Command;
+namespace LLENON\OltInformation\OLT\Utils\Command;
 
-use LLENON\OltInformation\OLT\ZTE\DataProcessors\StringParserInterface;
-use LLENON\OltInformation\OLT\ZTE\ZTEConnection;
+
+use LLENON\OltInformation\Connections\ConnectionInterface;
+use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
 
 abstract class AbstractCommand
 {
+
     public function __construct(
-        protected ZTEConnection         $connection,
+        protected ConnectionInterface         $connection,
         protected StringParserInterface $parser
     )
     {

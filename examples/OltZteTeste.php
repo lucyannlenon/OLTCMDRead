@@ -88,7 +88,7 @@ $conn = new \LLENON\OltInformation\OLT\ZTE\ZTEConnection($oltModel);
 //dd($data);
 ##<VlanOnuCommand
 #####>DetailInfoOnuCommand
-$DetailInfoOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\DetailInfoOnuCommand($conn);
-$data =$DetailInfoOnuCommand->execute("1/3/1","1");
-dd($data);
+//$DetailInfoOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\DetailInfoOnuCommand($conn);
+//$data =$DetailInfoOnuCommand->execute("1/3/1","1");
+//dd($data);
 ##<DetailInfoOnuCommand

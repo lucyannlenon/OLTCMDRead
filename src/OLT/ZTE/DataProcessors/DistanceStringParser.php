@@ -2,6 +2,8 @@
 
 namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
 
+use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
+
 class DistanceStringParser implements StringParserInterface
 {
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace LLENON\OltInformation\OLT\ZTE\DataProcessors;
+namespace LLENON\OltInformation\OLT\DATACOM\Command\DataProcessors;
 
 use LLENON\OltInformation\OLT\Dto\Onu;
 use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
 
-class ListUnAuthorizedStringParser implements  StringParserInterface
+class ListUnAuthorizationParse implements StringParserInterface
 {
 
     public function parse(string $input): array
@@ -16,28 +16,27 @@ class ListUnAuthorizedStringParser implements  StringParserInterface
 
         foreach ($lines as $line) {
             if ($this->isLineValid($line)) {
+
                 $onu = $this->extractData($line);
                 if ($onu) {
                     $results[] = $onu;
                 }
             }
         }
-
         return $results;
     }
 
     private function isLineValid(string $line): bool
     {
-        return !(str_contains($line, '---') || trim($line) === '' || str_contains($line, 'OltIndex'));
+        return !preg_match('/^\D/', trim($line));
     }
 
     private function extractData(string $line): ?Onu
     {
-        if (preg_match('/^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)/', trim($line), $matches)) {
+        if (preg_match('/^(\S+)\s+(\S+)/', trim($line), $matches)) {
             $onu = new Onu();
-            $onu->setPon(str_replace("gpon_olt-", '', $matches[1]))
-                ->setModel($matches[2])
-                ->setGponId($matches[3]);
+            $onu->setPon($matches[1])
+                ->setGponId($matches[2]);
             return $onu;
         }
         return null;
