@@ -10,7 +10,6 @@ class ListOnuParse implements StringParserInterface
 
     public function parse(string $input): array
     {
-        dump($input);
         $lines = explode("\r\n", $input);
         $results = [];
 
