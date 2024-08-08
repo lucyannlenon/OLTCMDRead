@@ -7,6 +7,7 @@ use LLENON\OltInformation\OLT\Utils\Parse\StringParserInterface;
 
 class GetVlanStringParser implements StringParserInterface
 {
+
     /**
      * @param string $input
      * @return array
