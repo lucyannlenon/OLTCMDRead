@@ -21,8 +21,8 @@ $onu->setPon("NA-NA-14-1")
 
 
 ##>ListUnAuthorization
-//$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListUnAuthorizationOnu($conn);
-//dd($discoveryOnu->execute());
+$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListUnAuthorizationOnu($conn);
+dd($discoveryOnu->execute());
 ##<ListUnAuthorization
 
 ##>NextIdCommand

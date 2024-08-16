@@ -38,7 +38,7 @@ class ListUnAuthorizedStringParser implements  StringParserInterface
 
             $onu = new Onu();
             $onu->setPon("NA-NA-{$items[0]}-{$items[1]}")
-                ->setModel($items[4])
+                ->setModel($items[7])
                 ->setGponId($items[2]);
             return $onu;
         }
