@@ -50,6 +50,7 @@ class DATACOMConnection implements ConnectionInterface
                 $this->oltModel->port
             );
         }
+
         return $this->connection;
 
 
@@ -66,9 +67,9 @@ class DATACOMConnection implements ConnectionInterface
         return trim($data);
     }
 
-    public function setTimeout(int $int)
+    public function setTimeout(int $timeout):void
     {
-        $this->getConn()->getConn()->setTimeout($int);
+        $this->getConn()->getConn()->setTimeout($timeout);
     }
 
     private function removeMore(bool|string|null $data): string

@@ -37,11 +37,13 @@ class SSHConnection implements ConnectionInterface
         return $this->getConn()->exec($cmd);
     }
 
+
     private function startConnection(): void
     {
         self::$lasAddress = $this->address;
         self::$conn = new SSH2($this->address, $this->port);
         $success = self::$conn->login($this->username, $this->password);
+
         if (!$success) {
             throw new InvalidUserException("Invalid credentials user: $this->username, ip: $this->address, port: $this->port");
         }

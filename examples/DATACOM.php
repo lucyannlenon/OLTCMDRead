@@ -83,9 +83,9 @@ $conn = new \LLENON\OltInformation\OLT\DATACOM\DATACOMConnection($oltModel);
 ##<DistanceOnuCommand
 
 ###>OnuEthernetStatusCommand
-//$OnuEthernetStatusCommand = new OnuEthernetStatusCommand($conn);
-//$data =$OnuEthernetStatusCommand->execute("1/1/5","2");
-//dd($data);
+$OnuEthernetStatusCommand = new OnuEthernetStatusCommand($conn);
+$data =$OnuEthernetStatusCommand->execute("1/1/1","24");
+dd($data);
 ##<OnuEthernetStatusCommand
 
 ###>WanStatusOnuCommand
@@ -95,13 +95,13 @@ $conn = new \LLENON\OltInformation\OLT\DATACOM\DATACOMConnection($oltModel);
 ##<WanStatusOnuCommand
 
 ####>VlanOnuCommand
-$VlanOnuCommand = new GetVlanCommand($conn);
-$data =$VlanOnuCommand->execute("1/1/5","2");
-dd($data);
+//$VlanOnuCommand = new GetVlanCommand($conn);
+//$data =$VlanOnuCommand->execute("1/1/5","2");
+//dd($data);
 ##<VlanOnuCommand
 
 #####>DetailInfoOnuCommand
 //$DetailInfoOnuCommand = new DetailInfoOnuCommand($conn);
-//$data =$DetailInfoOnuCommand->execute("1/1/5","2");
+//$data =$DetailInfoOnuCommand->execute("1/1/1","24");
 //dd($data);
 ##<DetailInfoOnuCommand

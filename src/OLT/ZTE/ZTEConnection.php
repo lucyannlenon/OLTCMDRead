@@ -64,8 +64,8 @@ class ZTEConnection implements ConnectionInterface
         return trim($data);
     }
 
-    public function setTimeout(int $int)
+    public function setTimeout(int $timeout):void
     {
-        $this->getConn()->getConn()->setTimeout($int);
+        $this->getConn()->getConn()->setTimeout($timeout);
     }
 }

@@ -5,27 +5,25 @@ namespace LLENON\OltInformation\Connections;
 class TL1Connection implements ConnectionInterface
 {
     private mixed $fp;
-    private bool $DEBUG = false;
-    private string $ipTL1;
+    private string $ipOlt;
 
-    public function getIpTL1(): string
+    public function getIpOlt(): string
     {
-        return $this->ipTL1;
+        return $this->ipOlt;
     }
 
 
-    public function __construct(string $ipTL1,string $ipAdmin, string $User, string $Pass, bool $debug = false)
+    public function __construct(string $ipOlt, string $ipTl1, string $User, string $Pass, bool $debug = false)
     {
-        $this->validateInput($ipAdmin, $ipTL1, $User, $Pass);
+        $this->validateInput($ipTl1, $ipOlt, $User, $Pass);
 
-        $this->fp = @fsockopen($ipAdmin, 3337);
+        $this->fp = @fsockopen($ipTl1, 3337);
         if (!$this->fp) {
-            throw new \Exception("Failed to connect to $ipAdmin");
+            throw new \Exception("Failed to connect to $ipTl1");
         }
 
-        $this->ipTL1 = $ipTL1;
+        $this->ipOlt = $ipOlt;
         $ret =  $this->exec("LOGIN:::CTAG::UN={$User},PWD={$Pass};");
-        $this->DEBUG = $debug;
     }
 
     public function exec(string $cmd): string
@@ -59,5 +57,10 @@ class TL1Connection implements ConnectionInterface
     public function __destruct()
     {
         $this->close();
+    }
+
+    public function setTimeout(int $timeout): void
+    {
+       // todo not necessary in this case
     }
 }
