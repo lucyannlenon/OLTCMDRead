@@ -48,4 +48,9 @@ class SSHConnection implements ConnectionInterface
             throw new InvalidUserException("Invalid credentials user: $this->username, ip: $this->address, port: $this->port");
         }
     }
+
+    public function setTimeout(int $timeout): void
+    {
+        // TODO: Implement setTimeout() method.
+    }
 }
