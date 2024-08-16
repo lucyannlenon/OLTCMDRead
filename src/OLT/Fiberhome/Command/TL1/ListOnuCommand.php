@@ -7,6 +7,7 @@ use LLENON\OltInformation\DTO\StatusLinkEnum;
 use LLENON\OltInformation\OLT\Dto\OnuEthernet;
 use LLENON\OltInformation\OLT\Fiberhome\Command\DataProcessors\EmptyReturnStringParser;
 use LLENON\OltInformation\OLT\Fiberhome\Command\DataProcessors\EtherReturnStringParser;
+use LLENON\OltInformation\OLT\Fiberhome\Command\DataProcessors\ListOnuStringParser;
 use LLENON\OltInformation\OLT\Fiberhome\Command\DataProcessors\SignalReturnStringParser;
 use LLENON\OltInformation\OLT\Fiberhome\Command\DataProcessors\TestReturnStringParser;
 use LLENON\OltInformation\OLT\Fiberhome\FiberhomeConnection;
@@ -19,7 +20,7 @@ class ListOnuCommand extends AbstractTL1Command
 
     public function __construct(FiberhomeConnection $connection)
     {
-        $parser = new TestReturnStringParser();
+        $parser = new ListOnuStringParser();
         parent::__construct($connection, $parser);
     }
 
