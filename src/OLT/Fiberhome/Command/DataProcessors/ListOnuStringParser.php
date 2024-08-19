@@ -34,7 +34,7 @@ class ListOnuStringParser implements  StringParserInterface
     private function extractData(string $line): ?Onu
     {
         $matches = explode("\t", $line);
-        if(!empty($items)){
+        if(!empty($matches)){
             $onu = new Onu();
             $onu->setId($matches[0])
                 ->setState($matches[2])

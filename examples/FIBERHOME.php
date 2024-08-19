@@ -2,6 +2,7 @@
 
 use LLENON\OltInformation\DTO\Client;
 use LLENON\OltInformation\DTO\OLT;
+use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListOnuCommand;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\RemoveOnuCommand;
 use LLENON\OltInformation\OLT\Fiberhome\FiberhomeConnection;
 
@@ -13,7 +14,7 @@ $config = json_decode(file_get_contents(__DIR__ . "/config/fiberhome.json"), TRU
 //ZTEGd3496b67 16/2
 $conn = new FiberhomeConnection($config['address'], $config['tl1Server'], $config['userName'], $config['password']);
 $onu = new \LLENON\OltInformation\OLT\Dto\Onu();
-$onu->setPon("NA-NA-14-1")
+$onu->setPon("NA-NA-14-6")
     ->setGponId("ZTEGd3496b6f")
     ->setModel('AN5506-04-B2')
     ->setVlan('100')
@@ -21,8 +22,8 @@ $onu->setPon("NA-NA-14-1")
 
 
 ##>ListUnAuthorization
-$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListUnAuthorizationOnu($conn);
-dd($discoveryOnu->execute());
+//$discoveryOnu = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListUnAuthorizationOnu($conn);
+//dd($discoveryOnu->execute());
 ##<ListUnAuthorization
 
 ##>NextIdCommand
@@ -95,7 +96,7 @@ dd($discoveryOnu->execute());
 ##<VlanOnuCommand
 
 ####>ListOnuCommand
-$ListOnuCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListOnuCommand($conn);
+$ListOnuCommand = new ListOnuCommand($conn);
 $data =$ListOnuCommand->execute($onu->getPon());
 dd($data);
 ##<ListOnuCommand
