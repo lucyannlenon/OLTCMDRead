@@ -27,11 +27,17 @@ class AddVlanCommand extends AbstractTL1Command
 
     protected function getCommand(): string
     {
-        return "ADD-PONVLAN::OLTID={$this->getIpOlt()},".
+        return  "CFG-LANPORTVLAN::OLTID={$this->getIpOlt()},".
             "PONID={$this->onu->getPon()},".
-            "AUTHTYPE=MAC,".
-            "ONUID={$this->onu->getGponId()}:CTAG::".
-            "CVLAN={$this->onu->getVlan()},".
-            "VLANMODE=tag;";
+            "ONUID={$this->onu->getGponId()},".
+            "ONUIDTYPE=MAC,".
+            "ONUPORT=NA-NA-1-1:CTAG::".
+            "CVLAN={$this->onu->getVlan()};";
+//        return "ADD-PONVLAN::OLTID={$this->getIpOlt()},".
+//            "PONID={$this->onu->getPon()},".
+//            "AUTHTYPE=MAC,".
+//            "ONUID={$this->onu->getGponId()}:CTAG::".
+//            "CVLAN={$this->onu->getVlan()},".
+//            "VLANMODE=tag;";
     }
 }

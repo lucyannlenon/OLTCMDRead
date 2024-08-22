@@ -14,7 +14,7 @@ $config = json_decode(file_get_contents(__DIR__ . "/config/fiberhome.json"), TRU
 //ZTEGd3496b67 16/2
 $conn = new FiberhomeConnection($config['address'], $config['tl1Server'], $config['userName'], $config['password']);
 $onu = new \LLENON\OltInformation\OLT\Dto\Onu();
-$onu->setPon("NA-NA-14-6")
+$onu->setPon("NA-NA-14-1")
     ->setGponId("ZTEGd3496b6f")
     ->setModel('AN5506-04-B2')
     ->setVlan('100')
@@ -39,8 +39,8 @@ $onu->setPon("NA-NA-14-6")
 
 
 ##>AddOnuBridgeCommand
-//$AddOnuBridgeCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\AddVlanCommand($conn);
-//dd($AddOnuBridgeCommand->execute($onu));
+$AddOnuBridgeCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\AddVlanCommand($conn);
+dd($AddOnuBridgeCommand->execute($onu));
 ##<AddOnuBridgeCommand
 
 ##>AddOnuWIFICommand

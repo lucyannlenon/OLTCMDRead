@@ -9,12 +9,12 @@ use LLENON\OltInformation\OLT\Fiberhome\FiberhomeConnection;
 class AddOnuBridgeCommand extends AbstractTL1Command
 {
     private \LLENON\OltInformation\OLT\Dto\Onu $onu;
+
     public function __construct(FiberhomeConnection $connection)
     {
         $parser = new EmptyReturnStringParser();
         parent::__construct($connection, $parser);
     }
-
 
 
     public function execute(\LLENON\OltInformation\OLT\Dto\Onu $onu): array
@@ -24,10 +24,7 @@ class AddOnuBridgeCommand extends AbstractTL1Command
         if (!$onu) {
             throw new \Exception("params with key onu need instance of " . Onu::class);
         }
-        $data = $this->exec();
-
-
-
+        $this->exec();
         return [
             'success' => false
         ];
