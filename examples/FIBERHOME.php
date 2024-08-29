@@ -14,8 +14,8 @@ $config = json_decode(file_get_contents(__DIR__ . "/config/fiberhome.json"), TRU
 //ZTEGd3496b67 16/2
 $conn = new FiberhomeConnection($config['address'], $config['tl1Server'], $config['userName'], $config['password']);
 $onu = new \LLENON\OltInformation\OLT\Dto\Onu();
-$onu->setPon("NA-NA-14-1")
-    ->setGponId("ZTEGd3496b6f")
+$onu->setPon("NA-NA-11-2")
+    ->setGponId("ZTEG9b040091")
     ->setModel('AN5506-04-B2')
     ->setVlan('100')
     ->setUsername("lenon");
@@ -39,8 +39,8 @@ $onu->setPon("NA-NA-14-1")
 
 
 ##>AddOnuBridgeCommand
-$AddOnuBridgeCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\AddVlanCommand($conn);
-dd($AddOnuBridgeCommand->execute($onu));
+//$AddOnuBridgeCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\AddVlanCommand($conn);
+//dd($AddOnuBridgeCommand->execute($onu));
 ##<AddOnuBridgeCommand
 
 ##>AddOnuWIFICommand
@@ -90,15 +90,15 @@ dd($AddOnuBridgeCommand->execute($onu));
 ##<EtherStateOnuCommand
 
 ####>VlanOnuCommand
-//$VlanOnuCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\VlanOnuCommand($conn);
-//$data =$VlanOnuCommand->execute($onu->getPon(), $onu->getGponId());
-//dd($data);
+$VlanOnuCommand = new \LLENON\OltInformation\OLT\Fiberhome\Command\TL1\VlanOnuCommand($conn);
+$data =$VlanOnuCommand->execute($onu->getPon(), $onu->getGponId());
+dd($data);
 ##<VlanOnuCommand
 
 ####>ListOnuCommand
-$ListOnuCommand = new ListOnuCommand($conn);
-$data =$ListOnuCommand->execute($onu->getPon());
-dd($data);
+//$ListOnuCommand = new ListOnuCommand($conn);
+//$data =$ListOnuCommand->execute($onu->getPon());
+//dd($data);
 ##<ListOnuCommand
 
 #####>DetailInfoOnuCommand

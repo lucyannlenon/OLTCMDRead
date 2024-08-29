@@ -20,7 +20,7 @@ class VlanOnuCommand extends AbstractTL1Command
 
     public function __construct(FiberhomeConnection $connection)
     {
-            $parser = new VlanReturnStringParser();
+        $parser = new VlanReturnStringParser();
         parent::__construct($connection, $parser);
     }
 
@@ -34,14 +34,14 @@ class VlanOnuCommand extends AbstractTL1Command
         $this->pon = $pon;
         $this->gponId = $gponId;
         try {
-            return $this->exec()[0];
-        }catch (\Exception $e) {
+            return $this->exec()[0] ?? 0;
+        } catch (\Exception $e) {
             return 0;
         }
     }
 
     protected function getCommand(): string
     {
-       return "LST-PORTVLAN::OLTID={$this->getIpOlt()},PONID={$this->pon},ONUIDTYPE=MAC,ONUID={$this->gponId},ONUPORT=NA-NA-NA-1:CTAG::;";
+        return "LST-PORTVLAN::OLTID={$this->getIpOlt()},PONID={$this->pon},ONUIDTYPE=MAC,ONUID={$this->gponId},ONUPORT=NA-NA-NA-1:CTAG::;";
     }
 }
