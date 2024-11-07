@@ -9,6 +9,7 @@ class SignalStringParser implements StringParserInterface
 
     public function parse(string $input): array
     {
+
         $lines = explode("\r\n", $input);
         $results = [];
 

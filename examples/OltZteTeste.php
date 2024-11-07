@@ -61,8 +61,9 @@ $conn = new \LLENON\OltInformation\OLT\ZTE\ZTEConnection($oltModel);
 ##<RemoveOnuCommand
 
 ###>SignalOnuCommand
-//$SignalOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\SignalOnuCommand($conn);
-//$SignalOnuCommand->execute("1/3/1","2");
+$SignalOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\SignalOnuCommand($conn);
+$signal =$SignalOnuCommand->execute("1/3/1","2");
+dd($signal);
 ##<SignalOnuCommand
 
 ###>DistanceOnuCommand

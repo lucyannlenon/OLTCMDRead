@@ -32,7 +32,7 @@ class SignalOnuCommand extends AbstractCommand
     protected function getCommand(): string
     {
         return <<<EOT
-show pon power olt-rx gpon_onu-{$this->pon}:{$this->onuId}
+show pon power onu-rx gpon_onu-{$this->pon}:{$this->onuId}
 EOT;
 
     }
