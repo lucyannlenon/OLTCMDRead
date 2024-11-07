@@ -33,6 +33,7 @@ class GetServicePortCommand extends AbstractCommand
 
     protected function getCommand(): string
     {
-        return "show running-config service-port | select gpon {$this->pon} | context-match \"onu {$this->onuId} \"";
+        $cmd = "show running-config service-port | select gpon {$this->pon} | context-match \"onu {$this->onuId} \"";
+        return $cmd;
     }
 }

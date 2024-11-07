@@ -23,21 +23,44 @@ class DATACOMConnection implements ConnectionInterface
     {
         $hostname = "{$this->oltModel->nome}#";
         $ssh = $this->getConn()->getConn();
+
+        // Envia o comando inicial e faz a leitura inicial
         $ssh->read($hostname);
         $ssh->write("$cmd\n");
 
-        $hostname2 = "#--More--|" . preg_quote($this->oltModel->nome) . "\##";
-        $read = $ssh->read($hostname2, SSH2::READ_REGEX);
+        $hostnamePattern = "#";
+        $read = '';
+        $timeout = 60; // Timeout em segundos
+        $startTime = microtime(true);
 
-        if (str_contains($read, "--More--")) {
-            do {
+        // Continua lendo até que receba o prompt final "#" ou "--More--"
+        do {
+            $read2 = $ssh->read($hostname, SSH2::READ_NEXT);
+
+            // Verifica o timeout
+            if ((microtime(true) - $startTime) > $timeout) {
+                throw new \Exception("Timeout reached while waiting for SSH response.");
+            }
+
+            // Se "--More--" estiver presente, envia espaço para continuar
+            if (str_contains($read, "--More--")) {
                 $ssh->write(" ");
-                $read2 = str_replace("\x08", "", $ssh->read($hostname2, SSH2::READ_REGEX));
-                $read .= $read2;
-            } while (str_contains($read2, "--More--"));
-        }
+            }
+            $read .= $read2;
+        } while (!$this->isFinalResponse($read2, $hostnamePattern));
+
+        // Limpa e retorna o resultado
         $read = $this->removeMore($read);
-        return $this->clearResult($read, $hostname, $cmd);
+
+        $clearResult = $this->clearResult($read, $hostname, $cmd);
+        return $clearResult;
+    }
+
+    private function isFinalResponse(string $read, string $pattern): bool
+    {
+        $read = trim($read);
+        // Verifica se a resposta finaliza com o prompt ou se ainda contém "--More--"
+        return str_ends_with($read, $pattern) && !str_contains($read, "--More--");
     }
 
     private function getConn(): SSHConnection
@@ -67,7 +90,7 @@ class DATACOMConnection implements ConnectionInterface
         return trim($data);
     }
 
-    public function setTimeout(int $timeout):void
+    public function setTimeout(int $timeout): void
     {
         $this->getConn()->getConn()->setTimeout($timeout);
     }
@@ -84,5 +107,17 @@ class DATACOMConnection implements ConnectionInterface
         }
         return "";
 
+    }
+
+    private function checkLoop(bool|string|null $read): bool
+    {
+        if (!$read) {
+            return false;
+        }
+        if (str_contains($read, "--More--") || str_ends_with(trim($read), "#")) {
+            return false;
+        }
+        usleep(4000);
+        return true;
     }
 }

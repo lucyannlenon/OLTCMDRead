@@ -15,8 +15,8 @@ class ListOnuParse implements StringParserInterface
 
         foreach ($lines as $line) {
             $line = trim($line);
-            if ($this->isLineValid($line)) {
-                $results[] = $this->extractData($line);
+            if ($this->isLineValid($line) && $data = $this->extractData($line)) {
+                $results[] = $data;
             }
         }
 
@@ -35,8 +35,7 @@ class ListOnuParse implements StringParserInterface
             $onu->setPon($matches[1])
                 ->setId($matches[2])
                 ->setState($matches[4])
-                ->setGponId($matches[3])
-            ;
+                ->setGponId($matches[3]);
             return $onu;
         }
         return null;
