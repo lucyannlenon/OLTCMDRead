@@ -1,6 +1,6 @@
 {
   "name": "llenon/olt-information",
-  "version": "1.0.5",
+  "type": "library",
   "autoload": {
     "psr-4": {
       "LLENON\\OltInformation\\": "src/"
