@@ -11,8 +11,7 @@ class TestReturnStringParser  extends AbstractStringParser
 
     protected function localParse(string $input): array
     {
-        dd($input);
-
-        return $lines ?? [];
+        $lines = preg_split("/\\R/", trim($input)) ?: [];
+        return array_values(array_filter(array_map('trim', $lines), static fn($line) => $line !== ''));
     }
 }

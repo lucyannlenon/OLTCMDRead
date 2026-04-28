@@ -7,8 +7,7 @@ use phpseclib3\Net\SSH2;
 
 class SSHConnection implements ConnectionInterface
 {
-    private static SSH2 $conn;
-    private static string $lasAddress;
+    private ?SSH2 $conn = null;
 
     public function __construct(
         private string                        $address,
@@ -17,17 +16,22 @@ class SSHConnection implements ConnectionInterface
         private string                        $port = "22"
     )
     {
-
-        if (empty(self::$conn) || !self::$conn->isConnected() || self::$lasAddress != $this->address) {
-            $this->startConnection();
-        }
-
-
+        // Lazy-connect on first use to avoid paying connection cost when an instance
+        // is created but never used (common in factories/adapters).
     }
 
     public function getConn(): SSH2
     {
-        return self::$conn;
+        $this->ensureConnected();
+        return $this->conn;
+    }
+
+    private function ensureConnected(): void
+    {
+        if ($this->conn instanceof SSH2 && $this->conn->isConnected()) {
+            return;
+        }
+        $this->startConnection();
     }
 
 
@@ -40,9 +44,8 @@ class SSHConnection implements ConnectionInterface
 
     private function startConnection(): void
     {
-        self::$lasAddress = $this->address;
-        self::$conn = new SSH2($this->address, $this->port);
-        $success = self::$conn->login($this->username, $this->password);
+        $this->conn = new SSH2($this->address, $this->port);
+        $success = $this->conn->login($this->username, $this->password);
 
         if (!$success) {
             throw new InvalidUserException("Invalid credentials user: $this->username, ip: $this->address, port: $this->port");
@@ -51,6 +54,6 @@ class SSHConnection implements ConnectionInterface
 
     public function setTimeout(int $timeout): void
     {
-        // TODO: Implement setTimeout() method.
+        $this->getConn()->setTimeout($timeout);
     }
 }

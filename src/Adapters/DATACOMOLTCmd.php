@@ -198,7 +198,8 @@
                 if (!empty($input_line))
                     $dadosDaOnu = array_merge($dadosDaOnu, explode("\n", $input_line));
 
-                usleep(200);
+                // Avoid tight busy-looping while waiting for full output.
+                usleep(200000);
             } while (!str_contains($input_line, 'Tx Optical Power'));
 
 
@@ -212,6 +213,15 @@
         public function searchOnuInOlt()
         {
 # -  show interface gpon onu | notab | include
+            $term = trim((string) $this->clientModel->gponName);
+            if ($term !== '') {
+                // Prefer server-side filtering to avoid paging through a huge ONU list.
+                $cmd = "show interface gpon onu | include {$term}";
+                $input_line = $this->conn->exec($cmd, true, '#');
+                $grep = preg_grep("/" . preg_quote($term, '/') . "/i", explode("\n", (string) $input_line));
+                return array_values($grep);
+            }
+
             $cmd = "show interface gpon onu";
             $input_line = $this->conn->exec($cmd, true, '--More--|#');
 

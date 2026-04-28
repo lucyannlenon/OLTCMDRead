@@ -44,7 +44,7 @@ class VSolOLTCmd implements OnuDataInterface
         $conn->login($oltModel->userName, $oltModel->password);
         $conn->exec("enable", true, "ord:");
         $conn->exec($oltModel->password);
-        echo $conn->exec("configure terminal");
+        $conn->exec("configure terminal");
         $this->conn = $conn;
     }
 
@@ -75,17 +75,20 @@ class VSolOLTCmd implements OnuDataInterface
     {
         $macAddress = $this->getMacAddress();
         $data = $this->conn->exec("show onu status {$macAddress}");
+        $needle = strtoupper($this->clientModel->macAddress);
+        $matchLine = null;
+        foreach (explode("\n", (string) $data) as $line) {
+            if (str_contains(strtoupper($line), $needle)) {
+                $matchLine = $line;
+                break;
+            }
+        }
 
-        $item = preg_grep("/{$this->clientModel->macAddress}/", explode("\n", strtoupper($data)));
-
-        // reorganisa os dados para reposicionar o array
-        $item = array_values($item);
-
-        if (empty($item)) {
+        if ($matchLine === null) {
             throw  new ClienteNotFund("Invalid client {$this->clientModel->login}");
         }
 
-        $return = explode("  ", $item[0]);
+        $return = explode("  ", $matchLine);
         $return = array_filter($return);
         $return = array_map(fn($value): string => trim($value), $return);
 
@@ -137,6 +140,9 @@ class VSolOLTCmd implements OnuDataInterface
 
         $dataStringToLines = explode("\n", $data);
         $result = $this->getDadosDoSinalEmArray($dataStringToLines);
+        if (count($result) < 6) {
+            return;
+        }
         $this->clientModel->onuTemperatura = $result[1];
         $this->clientModel->signal = $result[5];
     }
@@ -154,6 +160,9 @@ class VSolOLTCmd implements OnuDataInterface
         $regex = "/[A-Za-z]+{$this->clientModel->slot}\/{$this->clientModel->pon}:{$this->clientModel->onuPosition}/";
         $findString = preg_grep($regex, $dataStringToLines);
         $findString = array_values($findString);
+        if (empty($findString)) {
+            return [];
+        }
         $result = explode(" ", $findString[0]);
         $result = array_filter($result, fn($value) => $value != "");
 

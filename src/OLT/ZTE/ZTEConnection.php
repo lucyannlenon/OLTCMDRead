@@ -10,6 +10,10 @@ use phpseclib3\Net\SSH2;
 class ZTEConnection implements ConnectionInterface
 {
     private ConnectionInterface $connection;
+    private bool $initialized = false;
+    /** @var array<string, array{t:int, v:string|bool}> */
+    private array $cache = [];
+    private int $cacheTtlSeconds = 3;
 
     public function __construct(
         private readonly OLT $oltModel
@@ -21,6 +25,31 @@ class ZTEConnection implements ConnectionInterface
 
     public function exec(string $cmd): string|bool
     {
+        $this->ensureInitialized();
+        return $this->runCommand($cmd);
+    }
+
+    private function ensureInitialized(): void
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        // Reduce interactive paging / "--More--" round-trips.
+        // ZTE CLIs commonly support this; if the command is unknown it is harmless for most flows.
+        $this->runCommand("terminal length 0");
+        $this->initialized = true;
+    }
+
+    private function runCommand(string $cmd): string|bool
+    {
+        if ($this->isCacheable($cmd)) {
+            $cached = $this->cache[$cmd] ?? null;
+            if ($cached && (time() - $cached['t']) <= $this->cacheTtlSeconds) {
+                return $cached['v'];
+            }
+        }
+
         $hostname = "{$this->oltModel->nome}#";
         $ssh = $this->getConn()->getConn();
         $ssh->read($hostname);
@@ -36,7 +65,20 @@ class ZTEConnection implements ConnectionInterface
             } while (str_contains($read2, "--More--"));
         }
 
-        return $this->clearResult($read, $hostname, $cmd);
+        $result = $this->clearResult($read, $hostname, $cmd);
+        if ($this->isCacheable($cmd)) {
+            $this->cache[$cmd] = ['t' => time(), 'v' => $result];
+        }
+        return $result;
+    }
+
+    private function isCacheable(string $cmd): bool
+    {
+        $cmd = ltrim($cmd);
+        return str_starts_with($cmd, 'show pon onu information')
+            || str_starts_with($cmd, 'show gpon onu detail-info')
+            || str_starts_with($cmd, 'show pon power onu-rx')
+            || str_starts_with($cmd, 'show gpon remote-onu ');
     }
 
     private function getConn(): SSHConnection

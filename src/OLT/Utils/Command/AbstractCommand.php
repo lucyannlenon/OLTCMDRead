@@ -10,11 +10,12 @@ abstract class AbstractCommand
 {
 
     public function __construct(
-        protected ConnectionInterface         $connection,
-        protected StringParserInterface $parser
+        protected ConnectionInterface $connection,
+        protected StringParserInterface $parser,
+        int $timeoutSeconds = 10
     )
     {
-        $this->connection->setTimeout(1);
+        $this->connection->setTimeout($timeoutSeconds);
     }
 
     protected function exec(): array
