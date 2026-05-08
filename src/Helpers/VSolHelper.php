@@ -11,7 +11,8 @@
         protected $passwordPrompt = 'ord:';
         protected $afterLoginCommands = [];
         protected $beforeLogoutCommands = [];
-        protected $windowSize = null;
+        protected $windowSize = [220, 9999];
+        protected $paginationDetect = '/--More--|--- More ---/';
 
         /**
          * @return bool|mixed
