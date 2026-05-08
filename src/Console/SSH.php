@@ -21,13 +21,15 @@
             if (!ssh2_auth_password($this->connection, $username, $password)) {
                 throw new Exception("Error auth");
             }
-            $this->session = ssh2_shell($this->connection, "vt102");
-            try {
-                if ($wide && $high) {
-                    $this->setWindowSize($wide, $high);
-                }
-            } catch (Exception $e) {
-            }
+            // Large height prevents --More-- pagination without needing to send Space/Enter in a loop.
+            $this->session = ssh2_shell(
+                $this->connection,
+                "vt102",
+                null,
+                $wide ?? 220,
+                $high ?? 9999,
+                SSH2_TERM_UNIT_CHARS
+            );
             try {
                 $this->waitPrompt();
                 if ($this->helper->isDoubleLoginPrompt()) {
