@@ -30,6 +30,12 @@ class SignalStringParser implements StringParserInterface
 
     private function extractData(string $line): string
     {
-        return substr($line, 21);
+        $line = trim($line);
+
+        if (preg_match('/([+-]?\d+(?:\.\d+)?)\s*(?:dBm)?$/i', $line, $matches)) {
+            return $matches[1];
+        }
+
+        return $line;
     }
 }

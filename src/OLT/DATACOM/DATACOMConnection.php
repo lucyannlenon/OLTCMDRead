@@ -10,6 +10,8 @@ use phpseclib3\Net\SSH2;
 class DATACOMConnection implements ConnectionInterface
 {
     private ConnectionInterface $connection;
+    private int $connectTimeout = 10;
+    private int $readTimeout = 60;
 
     public function __construct(
         private readonly OLT $oltModel
@@ -30,7 +32,6 @@ class DATACOMConnection implements ConnectionInterface
 
         $hostnamePattern = "#";
         $read = '';
-        $timeout = 60; // Timeout em segundos
         $startTime = microtime(true);
 
         // Continua lendo até que receba o prompt final "#" ou "--More--"
@@ -38,12 +39,12 @@ class DATACOMConnection implements ConnectionInterface
             $read2 = $ssh->read($hostname, SSH2::READ_NEXT);
 
             // Verifica o timeout
-            if ((microtime(true) - $startTime) > $timeout) {
+            if ((microtime(true) - $startTime) > $this->readTimeout) {
                 throw new \Exception("Timeout reached while waiting for SSH response.");
             }
 
             // Se "--More--" estiver presente, envia espaço para continuar
-            if (str_contains($read, "--More--")) {
+            if (str_contains($read2, "--More--")) {
                 $ssh->write(" ");
             }
             $read .= $read2;
@@ -72,6 +73,7 @@ class DATACOMConnection implements ConnectionInterface
                 $this->oltModel->password,
                 $this->oltModel->port
             );
+            $this->connection->setTimeout($this->connectTimeout);
         }
 
         return $this->connection;
@@ -92,7 +94,12 @@ class DATACOMConnection implements ConnectionInterface
 
     public function setTimeout(int $timeout): void
     {
-        $this->getConn()->getConn()->setTimeout($timeout);
+        $this->readTimeout = $timeout;
+        $this->connectTimeout = $timeout;
+
+        if (!empty($this->connection)) {
+            $this->connection->setTimeout($timeout);
+        }
     }
 
     private function removeMore(bool|string|null $data): string
@@ -109,15 +116,4 @@ class DATACOMConnection implements ConnectionInterface
 
     }
 
-    private function checkLoop(bool|string|null $read): bool
-    {
-        if (!$read) {
-            return false;
-        }
-        if (str_contains($read, "--More--") || str_ends_with(trim($read), "#")) {
-            return false;
-        }
-        usleep(4000);
-        return true;
-    }
 }

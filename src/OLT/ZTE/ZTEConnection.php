@@ -14,6 +14,7 @@ class ZTEConnection implements ConnectionInterface
     /** @var array<string, array{t:int, v:string|bool}> */
     private array $cache = [];
     private int $cacheTtlSeconds = 3;
+    private int $timeout = 10;
 
     public function __construct(
         private readonly OLT $oltModel
@@ -90,6 +91,7 @@ class ZTEConnection implements ConnectionInterface
                 $this->oltModel->password,
                 $this->oltModel->port
             );
+            $this->connection->setTimeout($this->timeout);
         }
         return $this->connection;
 
@@ -108,6 +110,10 @@ class ZTEConnection implements ConnectionInterface
 
     public function setTimeout(int $timeout):void
     {
-        $this->getConn()->getConn()->setTimeout($timeout);
+        $this->timeout = $timeout;
+
+        if (!empty($this->connection)) {
+            $this->connection->setTimeout($timeout);
+        }
     }
 }

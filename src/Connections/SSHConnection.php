@@ -8,6 +8,7 @@ use phpseclib3\Net\SSH2;
 class SSHConnection implements ConnectionInterface
 {
     private ?SSH2 $conn = null;
+    private int $timeout = 10;
 
     public function __construct(
         private string                        $address,
@@ -44,7 +45,7 @@ class SSHConnection implements ConnectionInterface
 
     private function startConnection(): void
     {
-        $this->conn = new SSH2($this->address, $this->port);
+        $this->conn = new SSH2($this->address, (int) $this->port, $this->timeout);
         $success = $this->conn->login($this->username, $this->password);
 
         if (!$success) {
@@ -54,6 +55,10 @@ class SSHConnection implements ConnectionInterface
 
     public function setTimeout(int $timeout): void
     {
-        $this->getConn()->setTimeout($timeout);
+        $this->timeout = $timeout;
+
+        if ($this->conn instanceof SSH2) {
+            $this->conn->setTimeout($timeout);
+        }
     }
 }
