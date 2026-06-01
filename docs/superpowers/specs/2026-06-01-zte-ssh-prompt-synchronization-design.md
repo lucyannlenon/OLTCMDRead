@@ -12,7 +12,9 @@ name can also be a display label instead of the real terminal hostname.
 
 ## Scope
 
-Change only `src/OLT/ZTE/ZTEConnection.php`.
+Change `src/OLT/ZTE/ZTEConnection.php` and add a minimal explicit disconnect
+operation to `src/Connections/SSHConnection.php` so a desynchronized session
+can be discarded before reconnecting.
 
 The improvement applies to all consumers of `ZTEConnection`, including ONU
 information, signal, lists, provisioning, and removal. Existing command
@@ -40,7 +42,8 @@ For each command:
 4. While pagination is active, write a space and continue reading.
 5. Remove pagination artifacts, the echoed command, and the stored prompt from
    the returned result.
-6. Store cacheable results using the existing TTL policy.
+6. Store cacheable results using the existing TTL policy. Keep signal readings
+   uncached inside the library so callers can request a live optical reading.
 
 The final prompt detector must use the stored exact prompt. A broad `[#>]`
 terminator must not be used for normal command execution because multiline

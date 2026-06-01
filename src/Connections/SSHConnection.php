@@ -49,6 +49,7 @@ class SSHConnection implements ConnectionInterface
         $success = $this->conn->login($this->username, $this->password);
 
         if (!$success) {
+            $this->disconnect();
             throw new InvalidUserException("Invalid credentials user: $this->username, ip: $this->address, port: $this->port");
         }
     }
@@ -59,6 +60,19 @@ class SSHConnection implements ConnectionInterface
 
         if ($this->conn instanceof SSH2) {
             $this->conn->setTimeout($timeout);
+        }
+    }
+
+    public function disconnect(): void
+    {
+        if ($this->conn instanceof SSH2) {
+            try {
+                $this->conn->disconnect();
+            } catch (\Throwable) {
+                // The local reference still needs to be discarded when the socket is broken.
+            } finally {
+                $this->conn = null;
+            }
         }
     }
 }
