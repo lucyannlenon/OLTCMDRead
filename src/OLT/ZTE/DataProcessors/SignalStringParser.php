@@ -32,8 +32,8 @@ class SignalStringParser implements StringParserInterface
     {
         $line = trim($line);
 
-        if (preg_match('/([+-]?\d+(?:\.\d+)?)\s*(?:dBm)?$/i', $line, $matches)) {
-            return $matches[1];
+        if (preg_match('/([+-]?\d+(?:\.\d+)?)\s*(?:\(\s*dBm\s*\)|dBm)?$/i', $line, $matches)) {
+            return "{$matches[1]}(dbm)";
         }
 
         return $line;
