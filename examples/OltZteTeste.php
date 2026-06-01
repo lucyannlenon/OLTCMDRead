@@ -93,3 +93,9 @@ dd($signal);
 //$data =$DetailInfoOnuCommand->execute("1/3/1","1");
 //dd($data);
 ##<DetailInfoOnuCommand
+
+###>TemperatureOnuCommand
+//$TemperatureOnuCommand = new \LLENON\OltInformation\OLT\ZTE\Command\TemperatureOnuCommand($conn);
+//$temperature = $TemperatureOnuCommand->execute("1/3/1", "2");
+//dd($temperature);
+##<TemperatureOnuCommand
