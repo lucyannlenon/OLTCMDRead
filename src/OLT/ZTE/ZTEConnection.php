@@ -25,11 +25,12 @@ class ZTEConnection implements ConnectionInterface
      * before 'show gpon onu detail-info').
      */
     private const CACHE_TTL_MAP = [
-        'show gpon onu distance'       => 3600,
-        'show gpon remote-onu service' => 300,
-        'show gpon remote-onu '        => 60,
-        'show gpon onu detail-info'    => 60,
-        'show pon onu information'     => 30,
+        'show gpon onu distance'              => 3600,
+        'show gpon remote-onu service'        => 300,
+        'show gpon remote-onu interface pon'  => null,
+        'show gpon remote-onu '               => 60,
+        'show gpon onu detail-info'           => 60,
+        'show pon onu information'            => 30,
     ];
 
     public function __construct(
