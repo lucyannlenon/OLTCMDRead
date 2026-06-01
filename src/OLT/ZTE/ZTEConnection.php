@@ -13,8 +13,24 @@ class ZTEConnection implements ConnectionInterface
     private bool $initialized = false;
     /** @var array<string, array{t:int, v:string|bool}> */
     private array $cache = [];
-    private int $cacheTtlSeconds = 3;
     private int $timeout = 10;
+
+    /**
+     * Per-command-prefix TTL in seconds.
+     * Distance is physical fiber — changes only on cable work, safe to cache for an hour.
+     * VLAN/service provisioning changes only when an admin reconfigures — 5 minutes is safe.
+     * Signal fluctuates with line conditions; 20 s keeps readings reasonably current.
+     * More specific prefixes must come before broader ones (e.g. 'show gpon onu distance'
+     * before 'show gpon onu detail-info').
+     */
+    private const CACHE_TTL_MAP = [
+        'show gpon onu distance'       => 3600,
+        'show gpon remote-onu service' => 300,
+        'show gpon remote-onu '        => 60,
+        'show gpon onu detail-info'    => 60,
+        'show pon onu information'     => 30,
+        'show pon power onu-rx'        => 20,
+    ];
 
     public function __construct(
         private readonly OLT $oltModel
@@ -44,9 +60,10 @@ class ZTEConnection implements ConnectionInterface
 
     private function runCommand(string $cmd): string|bool
     {
-        if ($this->isCacheable($cmd)) {
+        $ttl = $this->getCacheTtl($cmd);
+        if ($ttl !== null) {
             $cached = $this->cache[$cmd] ?? null;
-            if ($cached && (time() - $cached['t']) <= $this->cacheTtlSeconds) {
+            if ($cached && (time() - $cached['t']) <= $ttl) {
                 return $cached['v'];
             }
         }
@@ -67,19 +84,21 @@ class ZTEConnection implements ConnectionInterface
         }
 
         $result = $this->clearResult($read, $hostname, $cmd);
-        if ($this->isCacheable($cmd)) {
+        if ($ttl !== null) {
             $this->cache[$cmd] = ['t' => time(), 'v' => $result];
         }
         return $result;
     }
 
-    private function isCacheable(string $cmd): bool
+    private function getCacheTtl(string $cmd): ?int
     {
         $cmd = ltrim($cmd);
-        return str_starts_with($cmd, 'show pon onu information')
-            || str_starts_with($cmd, 'show gpon onu detail-info')
-            || str_starts_with($cmd, 'show pon power onu-rx')
-            || str_starts_with($cmd, 'show gpon remote-onu ');
+        foreach (self::CACHE_TTL_MAP as $prefix => $ttl) {
+            if (str_starts_with($cmd, $prefix)) {
+                return $ttl;
+            }
+        }
+        return null;
     }
 
     private function getConn(): SSHConnection
