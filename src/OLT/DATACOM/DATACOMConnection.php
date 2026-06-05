@@ -9,9 +9,10 @@ use phpseclib3\Net\SSH2;
 
 class DATACOMConnection implements ConnectionInterface
 {
-    private ConnectionInterface $connection;
-    private int $connectTimeout = 10;
-    private int $readTimeout = 60;
+    private ?SSHConnection $connection = null;
+    private bool $initialized = false;
+    private ?string $prompt = null;
+    private int $timeout = 10;
 
     public function __construct(
         private readonly OLT $oltModel
@@ -23,57 +24,156 @@ class DATACOMConnection implements ConnectionInterface
 
     public function exec(string $cmd): string|bool
     {
-        $hostname = "{$this->oltModel->nome}#";
-        $ssh = $this->getConn()->getConn();
+        $this->ensureInitialized();
 
-        // Envia o comando inicial e faz a leitura inicial
-        $ssh->read($hostname);
-        $ssh->write("$cmd\n");
+        try {
+            return $this->executeCommand($cmd);
+        } catch (\RuntimeException $exception) {
+            $this->reconnect();
 
-        $hostnamePattern = "#";
-        $read = '';
-        $startTime = microtime(true);
-
-        // Continua lendo até que receba o prompt final "#" ou "--More--"
-        do {
-            $read2 = $ssh->read($hostname, SSH2::READ_NEXT);
-
-            // Verifica o timeout
-            if ((microtime(true) - $startTime) > $this->readTimeout) {
-                throw new \Exception("Timeout reached while waiting for SSH response.");
+            if (!$this->isReadOnly($cmd)) {
+                throw new \RuntimeException(
+                    "DATACOM SSH session lost synchronization. The command was not repeated automatically.",
+                    0,
+                    $exception
+                );
             }
 
-            // Se "--More--" estiver presente, envia espaço para continuar
-            if (str_contains($read2, "--More--")) {
-                $ssh->write(" ");
+            try {
+                return $this->executeCommand($cmd);
+            } catch (\RuntimeException $retryException) {
+                $this->disconnect();
+                throw new \RuntimeException(
+                    "DATACOM SSH session lost synchronization after retrying the read-only command.",
+                    0,
+                    $retryException
+                );
             }
-            $read .= $read2;
-        } while (!$this->isFinalResponse($read2, $hostnamePattern));
-
-        // Limpa e retorna o resultado
-        $read = $this->removeMore($read);
-
-        $clearResult = $this->clearResult($read, $hostname, $cmd);
-        return $clearResult;
+        }
     }
 
-    private function isFinalResponse(string $read, string $pattern): bool
+    private function ensureInitialized(): void
     {
-        $read = trim($read);
-        // Verifica se a resposta finaliza com o prompt ou se ainda contém "--More--"
-        return str_ends_with($read, $pattern) && !str_contains($read, "--More--");
+        if ($this->initialized) {
+            return;
+        }
+
+        try {
+            $this->synchronizePrompt();
+            $this->initialized = true;
+        } catch (\RuntimeException $exception) {
+            $this->disconnect();
+            throw $exception;
+        }
+    }
+
+    private function executeCommand(string $cmd): string|bool
+    {
+        if ($this->prompt === null) {
+            throw new \RuntimeException("DATACOM SSH prompt is not synchronized.");
+        }
+
+        $ssh = $this->getConn()->getConn();
+        $responsePattern = "~(?:--More--|\(END\)|" . preg_quote($this->prompt, "~") . "\s*$)~";
+
+        $ssh->write("$cmd\n");
+        $read = $this->readResponse($ssh, $responsePattern);
+
+        if (!$this->endsWithPrompt($read)) {
+            throw new \RuntimeException("DATACOM SSH response did not end with the expected prompt.");
+        }
+
+        $read = $this->removeMore($read);
+
+        return $this->clearResult($read, $this->prompt, $cmd);
+    }
+
+    private function readResponse(SSH2 $ssh, string $responsePattern): string
+    {
+        $read = $this->read($ssh, $responsePattern);
+        $lastRead = $read;
+
+        while (str_contains($lastRead, "--More--") || str_contains($lastRead, "(END)")) {
+            $ssh->write(str_contains($lastRead, "(END)") ? "q" : " ");
+            $lastRead = $this->read($ssh, $responsePattern);
+            $read .= "\r\n" . $lastRead;
+        }
+
+        return $read;
+    }
+
+    private function read(SSH2 $ssh, string $responsePattern): string
+    {
+        $read = $ssh->read($responsePattern, SSH2::READ_REGEX);
+
+        if ($ssh->isTimeout()) {
+            throw new \RuntimeException("Timeout while waiting for DATACOM SSH response.");
+        }
+
+        if (!is_string($read) || $read === '') {
+            throw new \RuntimeException("Empty DATACOM SSH response.");
+        }
+
+        return $read;
+    }
+
+    private function synchronizePrompt(): void
+    {
+        $ssh = $this->getConn()->getConn();
+        $read = $this->read($ssh, "~(?:^|\r?\n)([^\r\n]*[#>])\s*$~");
+
+        if (!preg_match("~(?:^|\r?\n)([^\r\n]*[#>])\s*$~", $read, $matches)) {
+            throw new \RuntimeException("Unable to detect DATACOM SSH prompt.");
+        }
+
+        $prompt = trim($matches[1]);
+        if ($prompt === '') {
+            throw new \RuntimeException("Detected an empty DATACOM SSH prompt.");
+        }
+
+        $this->prompt = $this->removeAnsiSequences($prompt);
+    }
+
+    private function endsWithPrompt(string $read): bool
+    {
+        return $this->prompt !== null
+            && preg_match("~" . preg_quote($this->prompt, "~") . "\s*$~", $this->removeAnsiSequences($read)) === 1;
+    }
+
+    private function reconnect(): void
+    {
+        $this->disconnect();
+        $this->ensureInitialized();
+    }
+
+    private function disconnect(): void
+    {
+        try {
+            $this->connection?->disconnect();
+        } catch (\Throwable) {
+            // A broken socket must not prevent the next command from reconnecting.
+        } finally {
+            $this->connection = null;
+            $this->prompt = null;
+            $this->initialized = false;
+        }
+    }
+
+    private function isReadOnly(string $cmd): bool
+    {
+        return str_starts_with(strtolower(ltrim($cmd)), "show ");
     }
 
     private function getConn(): SSHConnection
     {
-        if (empty($this->connection)) {
+        if ($this->connection === null) {
             $this->connection = new SSHConnection(
                 $this->oltModel->ip,
                 $this->oltModel->userName,
                 $this->oltModel->password,
                 $this->oltModel->port
             );
-            $this->connection->setTimeout($this->connectTimeout);
+            $this->connection->setTimeout($this->timeout);
         }
 
         return $this->connection;
@@ -81,23 +181,25 @@ class DATACOMConnection implements ConnectionInterface
 
     }
 
-    private function clearResult(bool|string|null $read, string $hostname, string $command): string|bool
+    private function clearResult(bool|string|null $read, string $prompt, string $command): string|bool
     {
         if (empty($read)) {
             return false;
         }
 
-        $data = str_replace($hostname, '', $read);
+        $data = $this->removeAnsiSequences($read);
+        $data = str_replace("\x08", '', $data);
+        $data = str_replace("--More--", '', $data);
+        $data = str_replace($prompt, '', $data);
         $data = str_replace($command, '', $data);
         return trim($data);
     }
 
     public function setTimeout(int $timeout): void
     {
-        $this->readTimeout = $timeout;
-        $this->connectTimeout = $timeout;
+        $this->timeout = $timeout;
 
-        if (!empty($this->connection)) {
+        if ($this->connection !== null) {
             $this->connection->setTimeout($timeout);
         }
     }
@@ -105,7 +207,7 @@ class DATACOMConnection implements ConnectionInterface
     private function removeMore(bool|string|null $data): string
     {
 
-        $cleanedData = preg_replace('/\e\[[0-9;]*[a-zA-Z]/', '', $data);
+        $cleanedData = $this->removeAnsiSequences($data);
         $cleanedData = preg_replace('/--More--/', '', $cleanedData);
         $cleanedData = preg_replace('/\(END\)/', '', $cleanedData);
 
@@ -114,6 +216,15 @@ class DATACOMConnection implements ConnectionInterface
         }
         return "";
 
+    }
+
+    private function removeAnsiSequences(bool|string|null $data): string
+    {
+        if ($data === null || $data === false) {
+            return "";
+        }
+
+        return preg_replace('/\e\[[0-9;?]*[a-zA-Z]/', '', $data) ?? "";
     }
 
 }
