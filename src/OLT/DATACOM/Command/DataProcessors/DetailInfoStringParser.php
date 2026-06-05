@@ -19,6 +19,7 @@ class DetailInfoStringParser implements StringParserInterface
             'distance' => 'Distance\s+?:(?P<distance>.*)',
             'status' => 'Operational state\s+?:(?P<status>.*)',
             'tx_power' => 'Tx Optical Power \[dBm\]\s+?:(?P<tx_power>.*)',
+            'temperature' => 'Temperature(?:\s*(?:\[[^\]]+\]|\([^\)]+\)))?\s*:(?P<temperature>.*)',
             'anti_rogue' => 'Anti Rogue ONU isolate\s+?:(?P<anti_rogue>.*)'
         ];
 
