@@ -1,5 +1,9 @@
 # OLTCMDRead
 
+## Documentacao
+
+- [Descoberta da MAC do roteador por ONU EPON](docs/epon-onu-router-mac-discovery.md)
+
 ```
 
     $userName = 'xxx';
@@ -35,4 +39,3 @@
 }*/
 ```
 re
-

@@ -3,6 +3,8 @@
 namespace LLENON\OltInformation\OLT\Utils\OnuList;
 
 use LLENON\OltInformation\DTO\OLT;
+use LLENON\OltInformation\OLT\CDATA\CDATAConnection;
+use LLENON\OltInformation\OLT\CDATA\Command\ListOnuCommand as CdataListOnuCommand;
 use LLENON\OltInformation\OLT\DATACOM\DATACOMConnection;
 use LLENON\OltInformation\OLT\DATACOM\Command\ListOnuCommand as DatacomListOnuCommand;
 use LLENON\OltInformation\OLT\ZTE\Command\ListOnuCommand as ZteListOnuCommand;
@@ -49,6 +51,10 @@ final class HybridOnuLister
 
         if (str_contains(strtoupper($modelKey), 'DATACOM')) {
             return (new DatacomListOnuCommand(new DATACOMConnection($olt)))->execute($pon);
+        }
+
+        if (str_contains(strtoupper($modelKey), 'CDATA')) {
+            return (new CdataListOnuCommand(new CDATAConnection($olt)))->execute($pon);
         }
 
         // Unknown model: safest is return empty (or throw) to avoid wrong command.
