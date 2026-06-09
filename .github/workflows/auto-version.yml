@@ -1,0 +1,74 @@
+name: Automatic patch version
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: automatic-main-patch-version
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    name: Create patch tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create next patch version
+        shell: bash
+        env:
+          TARGET_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          git fetch --force --tags origin
+
+          existing_tag="$(
+            git tag --points-at "${TARGET_SHA}" \
+              | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+              | sort -V \
+              | tail -n 1 \
+              || true
+          )"
+
+          if [[ -n "${existing_tag}" ]]; then
+            echo "Commit ${TARGET_SHA} is already versioned as ${existing_tag}."
+            exit 0
+          fi
+
+          latest_tag="$(
+            git tag --list \
+              | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+              | sort -V \
+              | tail -n 1 \
+              || true
+          )"
+
+          if [[ -z "${latest_tag}" ]]; then
+            next_tag="v0.0.1"
+          else
+            version="${latest_tag#v}"
+            IFS='.' read -r major minor patch <<< "${version}"
+            next_tag="v${major}.${minor}.$((patch + 1))"
+          fi
+
+          if git rev-parse --verify --quiet "refs/tags/${next_tag}" >/dev/null; then
+            echo "Calculated tag ${next_tag} already exists." >&2
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag --annotate "${next_tag}" "${TARGET_SHA}" --message "Release ${next_tag}"
+          git push origin "refs/tags/${next_tag}"
+
+          echo "Created ${next_tag} for ${TARGET_SHA}."

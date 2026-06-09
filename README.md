@@ -1,5 +1,19 @@
 # OLTCMDRead
 
+## Versionamento
+
+Cada novo commit enviado para `main` recebe automaticamente a proxima tag
+patch SemVer pelo workflow `.github/workflows/auto-version.yml`.
+
+Exemplo:
+
+```text
+v1.0.6 -> v1.0.7 -> v1.0.8
+```
+
+O pacote Composer usa essas tags Git como versoes. O `composer.json` nao
+declara uma versao fixa.
+
 ## Documentacao
 
 - [Descoberta da MAC do roteador por ONU EPON](docs/epon-onu-router-mac-discovery.md)
