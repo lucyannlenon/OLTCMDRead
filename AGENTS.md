@@ -17,7 +17,7 @@
 
 ## Coding Style & Naming Conventions
 
-- PHP: target `^8.1` (see `composer.json`); prefer strict typing where already used in nearby code.
+- PHP: target `>=8.3` (see `composer.json`); prefer strict typing where already used in nearby code.
 - Indentation: 2–4 spaces is acceptable; match the existing file you’re editing.
 - Namespaces/classes: PSR-4 under `LLENON\\OltInformation\\...` with one class per file in `src/`.
 - Filenames: keep existing vendor-model naming patterns (e.g., `DATACOM.php`, `FIBERHOME.php`) unless refactoring is explicitly required.

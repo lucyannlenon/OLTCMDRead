@@ -17,6 +17,10 @@
 
         public $serviceCommunication;
 
+        public ?string $cliProfile;
+
+        public ?string $firmwareVersion;
+
         /**
          * @param $user
          * @param $pw
@@ -26,7 +30,17 @@
          * @param $typeConnection
          * @param $nome
          */
-        public function __construct($user, $pw, $model, $ip, $port, $typeConnection, $nome)
+        public function __construct(
+            $user,
+            $pw,
+            $model,
+            $ip,
+            $port,
+            $typeConnection,
+            $nome = '',
+            ?string $cliProfile = null,
+            ?string $firmwareVersion = null
+        )
         {
             $this->userName = $user;
             $this->password = $pw;
@@ -35,6 +49,8 @@
             $this->port = $port;
             $this->serviceCommunication = $typeConnection;
             $this->nome = $nome;
+            $this->cliProfile = $cliProfile;
+            $this->firmwareVersion = $firmwareVersion;
         }
 
 

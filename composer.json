@@ -7,7 +7,7 @@
     }
   },
   "require": {
-    "php": "^8.1",
+    "php": ">=8.3",
     "meklis/console-client": "^0.0.3",
     "ext-ssh2": "*",
     "spatie/ssh": "^1.10",

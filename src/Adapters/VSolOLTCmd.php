@@ -3,180 +3,85 @@
 namespace LLENON\OltInformation\Adapters;
 
 use LLENON\OltInformation\DTO\Client;
+use LLENON\OltInformation\DTO\Ethernet;
 use LLENON\OltInformation\DTO\OLT;
-use LLENON\OltInformation\Enum\OltModel;
 use LLENON\OltInformation\Exceptions\ClienteNotFund;
 use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
-use Meklis\Network\Console\AbstractConsole;
-use Meklis\Network\Console\SSH;
-use Meklis\Network\Console\Telnet;
+use LLENON\OltInformation\OLT\VSOL\EPON\Command\EthernetStatusCommand;
+use LLENON\OltInformation\OLT\VSOL\EPON\Command\OnuStatusCommand;
+use LLENON\OltInformation\OLT\VSOL\EPON\Command\OpticalInfoCommand;
+use LLENON\OltInformation\OLT\VSOL\EPON\Connection\VSolEponConnection;
+use LLENON\OltInformation\OLT\VSOL\EPON\Connection\VSolEponConnectionInterface;
+use LLENON\OltInformation\Versioning\OltCliProfileRegistry;
 
 class VSolOLTCmd implements OnuDataInterface
 {
+    private VSolEponConnectionInterface $connection;
 
-    /**
-     * @var Client
-     */
-    private Client $clientModel;
-    /**
-     * @var AbstractConsole|SSH|Telnet
-     */
-    private \LLENON\OltInformation\Console\SSH|SSH|Telnet|AbstractConsole $conn;
-
-
-    /**
-     * @param OLT $oltModel
-     * @param Client $clientModel
-     * @throws \Exception
-     * @throws \Exception
-     * @throws \Exception
-     * @throws \Exception
-     * @throws \Exception
-     */
-    public function __construct(OLT $oltModel, Client $clientModel)
-    {
-        $this->clientModel = $clientModel;
-
-
-        $conn = OltModel::getSerive($oltModel->serviceCommunication);
-        $conn->setDeviceHelper(OltModel::getHelper($oltModel->model));
-        $conn->connect("{$oltModel->ip}:{$oltModel->port}");
-        $conn->login($oltModel->userName, $oltModel->password);
-        $conn->exec("enable", true, "ord:");
-        $conn->exec($oltModel->password);
-        $conn->exec("configure terminal");
-        $this->conn = $conn;
+    public function __construct(
+        private readonly OLT $oltModel,
+        private readonly Client $clientModel,
+        ?VSolEponConnectionInterface $connection = null
+    ) {
+        (new OltCliProfileRegistry())->resolve($oltModel);
+        $this->connection = $connection ?? new VSolEponConnection($oltModel);
     }
-
 
     public function getDadosDoCliente(): Client
     {
-        $this->setStatusToClient();
-        $this->setSignalClient();
-        $this->conn->disconnect();
-        return $this->clientModel;
-    }
+        try {
+            $status = (new OnuStatusCommand($this->connection))->execute(
+                (string) $this->clientModel->getMacAddress()
+            );
 
-    /**
-     * @return string
-     */
-    private function getMacAddress()
-    {
-        $arrayMac = explode(":", $this->clientModel->getMacAddress());
-        // MODELO ACEITO PELA OLT VSO AAAA:AAAA:AAAA
-        return "{$arrayMac[0]}{$arrayMac[1]}:{$arrayMac[2]}{$arrayMac[3]}:{$arrayMac[4]}{$arrayMac[5]}";
-    }
-
-    /**
-     * @return void
-     * @throws ClienteNotFund
-     */
-    private function setStatusToClient()
-    {
-        $macAddress = $this->getMacAddress();
-        $data = $this->conn->exec("show onu status {$macAddress}");
-        $needle = strtoupper($this->clientModel->macAddress);
-        $matchLine = null;
-        foreach (explode("\n", (string) $data) as $line) {
-            if (str_contains(strtoupper($line), $needle)) {
-                $matchLine = $line;
-                break;
+            if ($status === null) {
+                throw new ClienteNotFund("Invalid client {$this->clientModel->login}");
             }
+
+            $pon = self::ponNumber($status->pon);
+            $this->clientModel->slot = 0;
+            $this->clientModel->pon = $pon;
+            $this->clientModel->onuPosition = $status->onuId;
+            $this->clientModel->status = $status->isOnline() ? 'ONLINE' : 'Offline';
+            $this->clientModel->distance = "{$status->distance}m";
+            $this->clientModel->uptime = $status->aliveTime;
+
+            if (!$status->isOnline()) {
+                return $this->clientModel;
+            }
+
+            $this->setOnlineDiagnostics($pon, $status->onuId);
+            return $this->clientModel;
+        } finally {
+            $this->connection->disconnect();
         }
-
-        if ($matchLine === null) {
-            throw  new ClienteNotFund("Invalid client {$this->clientModel->login}");
-        }
-
-        $return = explode("  ", $matchLine);
-        $return = array_filter($return);
-        $return = array_map(fn($value): string => trim($value), $return);
-
-        // recorganiza o array
-        $return = array_values($return);
-
-        $this->setSlotPonOnidToClient($return[0]);
-        $this->clientModel->distance = $return[3];
-        $this->clientModel->status = $return[1];
-        $this->clientModel->uptime = $return[8] ?? "N/A";
     }
 
-    /**
-     * @param $str
-     * @return void
-     * @see  received text  EPON{slot}/{$pon}:{$onuId}
-     */
-    private function setSlotPonOnidToClient($str)
+    private function setOnlineDiagnostics(int $pon, int $onuId): void
     {
+        $optical = (new OpticalInfoCommand($this->connection))->execute($pon, $onuId);
+        if ($optical !== null) {
+            $this->clientModel->signal = "{$optical->rxOpticalLevel}dBm";
+            $this->clientModel->onuTemperatura = $optical->temperature;
+        }
 
-        // remove o que não é texto
-        $regex = '/([A-Za-z]+)(?P<slot>\d+)\/(?P<pon>\d+):(?P<onuId>\d+)/';
-        preg_match($regex, $str, $matches);
-
-
-        $this->clientModel->slot = $matches['slot'];
-        $this->clientModel->pon = $matches['pon'];
-        $this->clientModel->onuPosition = $matches['onuId'];
-
+        $ethernet = (new EthernetStatusCommand($this->connection))->execute($pon, $onuId);
+        if ($ethernet !== null) {
+            $this->clientModel->ethernet = Ethernet::createFromArray([
+                'speed' => $ethernet->speed,
+                'status' => $ethernet->status,
+                'speedConfig' => $ethernet->speedConfig,
+                'loopStatus' => $ethernet->loopStatus,
+            ]);
+        }
     }
 
-    /**
-     * @return void
-     */
-    private function setSignalClient(): void
+    private static function ponNumber(string $pon): int
     {
-        if (strtolower($this->clientModel->status) != "online") {
-
-            return;
+        if (!preg_match('~(?:^|/)(\d+)$~', $pon, $matches)) {
+            throw new \UnexpectedValueException("Invalid VSOL EPON PON '{$pon}'.");
         }
 
-        /**
-         * Text aser filtrado
-         * ONU-ID      Temperature(C)    Supply Voltage(V)   TX Bias Current(mA)   TX Power(dBm)   RX Power(dBm)\n
-         * ------      --------------    -----------------   -------------------   -------------   -------------\n
-         * EPON0/2:1   27.45             3.40                14.20                 2.09            -15.97\n
-         */
-        $data = $this->conn->exec("show onu opm-diag pon {$this->clientModel->pon},{$this->clientModel->onuPosition}");
-
-        $dataStringToLines = explode("\n", $data);
-        $result = $this->getDadosDoSinalEmArray($dataStringToLines);
-        if (count($result) < 6) {
-            return;
-        }
-        $this->clientModel->onuTemperatura = $result[1];
-        $this->clientModel->signal = $result[5];
-    }
-
-    /**
-     * @param $dataStringToLines
-     * @return string[]
-     */
-    private function getDadosDoSinalEmArray($dataStringToLines)
-    {
-        /*
-                     * probali result
-                     * EPON0/2:29  42.91             3.26                27.54                 2.22            -20.97
-                     */
-        $regex = "/[A-Za-z]+{$this->clientModel->slot}\/{$this->clientModel->pon}:{$this->clientModel->onuPosition}/";
-        $findString = preg_grep($regex, $dataStringToLines);
-        $findString = array_values($findString);
-        if (empty($findString)) {
-            return [];
-        }
-        $result = explode(" ", $findString[0]);
-        $result = array_filter($result, fn($value) => $value != "");
-
-        /*
-         *  array:6 [
-         *        0 => "EPON0/2:29"  // pon
-         *        1 => "42.91" // temperatura
-         *        2 => "3.26"  // Supply Voltage(V)
-         *        3 => "27.54" // TX Bias Current(mA)
-         *        4 => "2.22"  // TX Bias Current(mA)
-         *        5 => "-21.19"// RX Power(dBm)
-         *      ]
-         */
-
-        return array_values($result);
+        return (int) $matches[1];
     }
 }
