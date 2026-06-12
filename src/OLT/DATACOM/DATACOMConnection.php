@@ -146,7 +146,7 @@ class DATACOMConnection implements ConnectionInterface
         $this->ensureInitialized();
     }
 
-    private function disconnect(): void
+    public function disconnect(): void
     {
         try {
             $this->connection?->disconnect();

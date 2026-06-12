@@ -62,6 +62,14 @@ final class OltCliProfileRegistry
     }
 
     /**
+     * @return list<OltCliProfileDefinition>
+     */
+    public function all(): array
+    {
+        return array_values($this->profiles);
+    }
+
+    /**
      * @return array<OltCliProfileDefinition>
      */
     private static function defaultProfiles(): array

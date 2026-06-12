@@ -17,7 +17,8 @@ final class VSolGponConnection implements VSolGponConnectionInterface
 
     public function __construct(
         private readonly OLT $oltModel,
-        ?OltCliProfileRegistry $profileRegistry = null
+        ?OltCliProfileRegistry $profileRegistry = null,
+        private readonly bool $enforceFirmwareVersion = true,
     ) {
         $profile = ($profileRegistry ?? new OltCliProfileRegistry())->resolve($oltModel);
 
@@ -116,7 +117,9 @@ final class VSolGponConnection implements VSolGponConnectionInterface
                 'configure terminal',
                 '~gpon-olt\(config\)#\s*$~'
             );
-            $this->verifyFirmwareVersion();
+            if ($this->enforceFirmwareVersion) {
+                $this->verifyFirmwareVersion();
+            }
             $this->initialized = true;
         } catch (\Throwable $exception) {
             $this->disconnect();

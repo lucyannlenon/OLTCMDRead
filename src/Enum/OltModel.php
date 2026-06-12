@@ -22,6 +22,7 @@
         const CDATA = "CDATA";
         const VSOL = "VSOL";
         const VSOLGPON = "VSOLGPON";
+        const ZTE = "ZTE";
         const DATACOM = 'DATACOM';
         const FIBERHOMEOLDVERSION = "FIBERHOMEOLDVERSION";
         const FIBERHOME = "FIBERHOME";

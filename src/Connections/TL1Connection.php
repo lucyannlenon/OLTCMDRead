@@ -31,13 +31,9 @@ class TL1Connection implements ConnectionInterface
 
         $this->connect();
         $response = $this->exec("LOGIN:::CTAG::UN={$user},PWD={$pass};");
-        if ($this->debug) {
-            error_log("LOGIN response: $response");
-        }
-        // Optionally validate LOGIN response to ensure success
-        if (strpos($response, 'DENIED') !== false || empty($response)) {
+        if (!$this->isSuccessfulLoginResponse($response)) {
             $this->close();
-            throw new \RuntimeException("Login failed for user $user on $ipTl1");
+            throw new \RuntimeException('TL1 authentication failed.');
         }
     }
 
@@ -109,6 +105,24 @@ class TL1Connection implements ConnectionInterface
         $cmd = ltrim($cmd);
         return str_starts_with($cmd, 'LST-ONUSTATE::')
             || str_starts_with($cmd, 'LST-UNREGONU::');
+    }
+
+    private function isSuccessfulLoginResponse(string $response): bool
+    {
+        if (trim($response) === '') {
+            return false;
+        }
+
+        $normalized = strtoupper($response);
+
+        return !str_contains($normalized, 'DENY')
+            && !str_contains($normalized, 'FAILED')
+            && !str_contains($normalized, 'ERROR')
+            && (
+                str_contains($normalized, 'COMPLD')
+                || str_contains($normalized, 'SUCCESS')
+                || str_contains($normalized, 'CTAG')
+            );
     }
 
     public function close(): void
