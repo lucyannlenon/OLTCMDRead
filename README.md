@@ -17,6 +17,7 @@ declara uma versao fixa.
 ## Documentacao
 
 - [Descoberta da MAC do roteador por ONU EPON](docs/epon-onu-router-mac-discovery.md)
+- [Homologacao Fiberhome via TL1](docs/fiberhome-tl1-homologation.md)
 - [Matriz de recursos por fabricante](docs/olt-feature-matrix.md)
 - [Perfis de CLI versionados](docs/superpowers/specs/2026-06-09-olt-versioned-cli-profiles-design.md)
 - [VSOL EPON por Telnet](docs/superpowers/specs/2026-06-09-vsol-epon-telnet-support-design.md)

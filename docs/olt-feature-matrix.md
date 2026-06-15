@@ -10,9 +10,13 @@ php examples/olt_feature_matrix.php
 means the registered transport/profile does not currently expose it. Runtime
 values can still be `unavailable` for an offline ONU.
 
-Fiberhome is limited to the configured TL1 gateway. Firmware and learned-MAC
-features remain unsupported until the gateway is reachable and a reliable TL1
-query is confirmed.
+Fiberhome is limited to the configured shared TL1 gateway. Gateway access and
+authentication were validated for all four configured Fiberhome OLTs on
+June 15, 2026. Firmware and learned-MAC features remain unsupported until
+reliable TL1 queries are confirmed.
+
+See [Fiberhome TL1 homologation](fiberhome-tl1-homologation.md) for the
+validation result and current limitations.
 
 | Feature | CDATA | DATACOM | ZTE | FIBERHOME | VSOL | VSOLGPON |
 |---|---|---|---|---|---|---|
