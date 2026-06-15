@@ -5,6 +5,7 @@ namespace LLENON\OltInformation\OLT\CDATA;
 use LLENON\OltInformation\Connections\ConnectionInterface;
 use LLENON\OltInformation\Connections\SSHConnection;
 use LLENON\OltInformation\DTO\OLT;
+use LLENON\OltInformation\Versioning\OltFirmwareGuard;
 use phpseclib3\Net\SSH2;
 
 class CDATAConnection implements ConnectionInterface
@@ -15,7 +16,8 @@ class CDATAConnection implements ConnectionInterface
     private int $timeout = 10;
 
     public function __construct(
-        private readonly OLT $oltModel
+        private readonly OLT $oltModel,
+        private readonly bool $enforceFirmwareVersion = true
     ) {
     }
 
@@ -75,6 +77,12 @@ class CDATAConnection implements ConnectionInterface
         }
 
         try {
+            $guard = null;
+            if ($this->enforceFirmwareVersion) {
+                $guard = new OltFirmwareGuard();
+                $guard->validateConfiguration($this->oltModel);
+            }
+
             $this->synchronizePrompt();
 
             if (str_ends_with($this->prompt ?? '', '>')) {
@@ -95,8 +103,12 @@ class CDATAConnection implements ConnectionInterface
                 );
             }
 
+            if ($guard !== null) {
+                $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show version'));
+            }
+
             $this->initialized = true;
-        } catch (\RuntimeException $exception) {
+        } catch (\Throwable $exception) {
             $this->disconnect();
             throw $exception;
         }

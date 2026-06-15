@@ -5,6 +5,7 @@ namespace LLENON\OltInformation\OLT\DATACOM;
 use LLENON\OltInformation\Connections\ConnectionInterface;
 use LLENON\OltInformation\Connections\SSHConnection;
 use LLENON\OltInformation\DTO\OLT;
+use LLENON\OltInformation\Versioning\OltFirmwareGuard;
 use phpseclib3\Net\SSH2;
 
 class DATACOMConnection implements ConnectionInterface
@@ -15,7 +16,8 @@ class DATACOMConnection implements ConnectionInterface
     private int $timeout = 10;
 
     public function __construct(
-        private readonly OLT $oltModel
+        private readonly OLT $oltModel,
+        private readonly bool $enforceFirmwareVersion = true
     )
     {
 
@@ -59,9 +61,20 @@ class DATACOMConnection implements ConnectionInterface
         }
 
         try {
+            $guard = null;
+            if ($this->enforceFirmwareVersion) {
+                $guard = new OltFirmwareGuard();
+                $guard->validateConfiguration($this->oltModel);
+            }
+
             $this->synchronizePrompt();
+
+            if ($guard !== null) {
+                $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show firmware'));
+            }
+
             $this->initialized = true;
-        } catch (\RuntimeException $exception) {
+        } catch (\Throwable $exception) {
             $this->disconnect();
             throw $exception;
         }

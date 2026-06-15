@@ -12,10 +12,19 @@ final readonly class OltFirmwareParser
             return null;
         }
 
+        if (preg_match(
+            '/^\s*(?<version>\S+)\s+Active\s*$/mi',
+            $output,
+            $matches
+        ) === 1) {
+            return trim((string) $matches['version']);
+        }
+
         foreach ([
             '/^\s*Firmware version\s*:\s*(?<version>[^\s(]+)/mi',
             '/^\s*Software Version\s*:\s*(?<version>[^\s(]+)/mi',
             '/^\s*Software version\s*:\s*(?<version>[^\s(]+)/mi',
+            '/Software,\s*Version\s*:\s*(?<version>[^,\s]+)/mi',
             '/^\s*Version\s*:\s*(?<version>[^\s(]+)/mi',
             '/^\s*BootROM Version\s*:\s*(?<version>[^\s(]+)/mi',
         ] as $pattern) {

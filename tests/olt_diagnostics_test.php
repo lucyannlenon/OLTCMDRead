@@ -73,6 +73,15 @@ expect($result->firmwareMatch === false, 'Firmware mismatch must be explicit.');
 expect($connection->disconnected, 'Diagnostic connection must be disconnected.');
 expect(!array_key_exists('rawOutput', $result->toArray()), 'Raw output must not be exposed.');
 
+$zteVersion = (new \LLENON\OltInformation\Diagnostics\OltFirmwareParser())
+    ->extract('ZTE ZXA10 Software, Version: V1.2.2, Release software');
+expect($zteVersion === 'V1.2.2', 'ZTE software version must be parsed.');
+
+$datacomVersion = (new \LLENON\OltInformation\Diagnostics\OltFirmwareParser())->extract(
+    "8.0.2-old Inactive\n8.0.2-active Active\n"
+);
+expect($datacomVersion === '8.0.2-active', 'DATACOM active firmware must be parsed.');
+
 $failedConnection = new FakeDiagnosticConnection(new InvalidUserException(
     'Invalid credentials user: secret-user, password: secret-pass'
 ));

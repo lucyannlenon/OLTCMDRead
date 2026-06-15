@@ -42,9 +42,9 @@ class TL1Connection implements ConnectionInterface
         if (is_resource($this->fp)) {
             fclose($this->fp);
         }
-        $this->fp = fsockopen($this->ipTl1, 3337, $errno, $errstr, 30);
+        $this->fp = @fsockopen($this->ipTl1, 3337, $errno, $errstr, 30);
         if (!$this->fp) {
-            throw new \RuntimeException("Failed to connect to {$this->ipTl1}: $errstr ($errno)");
+            throw new \RuntimeException("Failed to connect to TL1 gateway: $errstr ($errno)");
         }
         stream_set_timeout($this->fp, 10); // Set 10-second timeout
     }

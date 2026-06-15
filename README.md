@@ -17,8 +17,39 @@ declara uma versao fixa.
 ## Documentacao
 
 - [Descoberta da MAC do roteador por ONU EPON](docs/epon-onu-router-mac-discovery.md)
+- [Matriz de recursos por fabricante](docs/olt-feature-matrix.md)
 - [Perfis de CLI versionados](docs/superpowers/specs/2026-06-09-olt-versioned-cli-profiles-design.md)
 - [VSOL EPON por Telnet](docs/superpowers/specs/2026-06-09-vsol-epon-telnet-support-design.md)
+
+## Homologacao multi-vendor
+
+Os perfis de CDATA, DATACOM, ZTE, Fiberhome, VSOL EPON e VSOL GPON publicam
+o mesmo catalogo normalizado. Cada operacao retorna `supported`,
+`unavailable` ou `unsupported`, sem usar valores vazios para esconder
+limitacoes do equipamento.
+
+Os arquivos JSON ignorados em `examples/config/olts` podem ser verificados
+com probes somente de leitura:
+
+```bash
+php examples/probe_olt_inventory.php --config=examples/config/olts
+php examples/probe_olt_version_evidence.php --config=examples/config/olts
+php examples/probe_olt_mac_table.php --config=examples/config/olts
+php examples/olt_feature_matrix.php
+```
+
+Fiberhome usa exclusivamente o gateway TL1 compartilhado nesta fase. As
+credenciais devem existir apenas no ambiente:
+
+```bash
+export IPSERVER_TL1='gateway-tl1'
+export USERNAME_TL1='usuario'
+export PASSWORD_TL1='senha'
+```
+
+O perfil DATACOM agrupa as tres versoes homologadas porque os equipamentos
+responderam ao mesmo conjunto de comandos e ao mesmo formato de parser. O
+comando confirmado para detectar firmware e `show firmware`.
 
 ## VSOL EPON
 

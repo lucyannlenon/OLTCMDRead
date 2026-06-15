@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "oltName": "TEST OLT",
+  "userName": "test-user",
+  "password": "test-password",
+  "address": "192.0.2.10",
+  "model": "ZTE",
+  "port": 22,
+  "typoConnection": "ssh",
+  "cliProfile": null,
+  "firmwareVersion": null
+}

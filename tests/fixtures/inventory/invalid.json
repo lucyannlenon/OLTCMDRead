@@ -1,0 +1,7 @@
+{
+  "id": 2,
+  "oltName": "INVALID OLT",
+  "model": "ZTE",
+  "port": 22,
+  "typoConnection": "ssh"
+}

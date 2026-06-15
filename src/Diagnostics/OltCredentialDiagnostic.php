@@ -90,18 +90,18 @@ final readonly class OltCredentialDiagnostic
     {
         return match ($model) {
             OltModel::CDATA => [
-                'connection' => new CDATAConnection($olt),
+                'connection' => new CDATAConnection($olt, enforceFirmwareVersion: false),
                 'command' => 'show version',
                 'transport' => 'ssh',
             ],
             OltModel::ZTE => [
-                'connection' => new ZTEConnection($olt),
-                'command' => 'show version',
+                'connection' => new ZTEConnection($olt, enforceFirmwareVersion: false),
+                'command' => 'show software',
                 'transport' => 'ssh',
             ],
             OltModel::DATACOM => [
-                'connection' => new DATACOMConnection($olt),
-                'command' => 'show version',
+                'connection' => new DATACOMConnection($olt, enforceFirmwareVersion: false),
+                'command' => 'show firmware',
                 'transport' => 'ssh',
             ],
             OltModel::VSOL => [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace LLENON\OltInformation\Capabilities;
 
-use LLENON\OltInformation\Enum\OltCliProfile;
 use LLENON\OltInformation\Enum\OltModel;
 use LLENON\OltInformation\Versioning\OltCliProfileRegistry;
 
@@ -20,8 +19,11 @@ final readonly class OltCapabilityRegistry
             $profiles[$profile->model][] = [
                 'id' => $profile->id,
                 'firmwares' => array_values($profile->firmwareVersions),
-                'defaultTransport' => $this->transport($profile->model),
-                'defaultPort' => $this->port($profile->model),
+                'defaultTransport' => $profile->transport,
+                'defaultPort' => $profile->defaultPort,
+                'credentialScope' => $profile->credentialScope,
+                'features' => array_values($profile->features),
+                'requiresFirmware' => $profile->requiresFirmware,
             ];
         }
 
@@ -42,9 +44,16 @@ final readonly class OltCapabilityRegistry
                 'defaultPort' => $this->port($model),
                 'credentialScope' => str_starts_with($model, 'FIBERHOME') ? 'shared_gateway' : 'device',
                 'cliProfiles' => $modelProfiles,
-                'firmwareMode' => $modelProfiles === [] ? 'free' : 'catalog',
+                'firmwareMode' => $modelProfiles === []
+                    ? 'free'
+                    : (array_merge(
+                        ...array_map(static fn (array $profile): array => $profile['firmwares'], $modelProfiles)
+                    ) === [] ? 'unavailable' : 'catalog'),
                 'firmwares' => array_values(array_unique(array_merge(
                     ...array_map(static fn (array $profile): array => $profile['firmwares'], $modelProfiles)
+                ))),
+                'features' => array_values(array_unique(array_merge(
+                    ...array_map(static fn (array $profile): array => $profile['features'], $modelProfiles)
                 ))),
                 'diagnosticSupported' => true,
             ];
