@@ -115,13 +115,17 @@ class TL1Connection implements ConnectionInterface
 
         $normalized = strtoupper($response);
 
+        if (str_contains($normalized, 'COMPLD')
+            && preg_match('/\bEN\s*=\s*0\b/', $normalized) === 1) {
+            return true;
+        }
+
         return !str_contains($normalized, 'DENY')
             && !str_contains($normalized, 'FAILED')
-            && !str_contains($normalized, 'ERROR')
+            && preg_match('/\bEN\s*=\s*[1-9]\d*\b/', $normalized) !== 1
             && (
                 str_contains($normalized, 'COMPLD')
                 || str_contains($normalized, 'SUCCESS')
-                || str_contains($normalized, 'CTAG')
             );
     }
 

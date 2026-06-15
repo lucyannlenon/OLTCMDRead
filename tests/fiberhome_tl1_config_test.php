@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use LLENON\OltInformation\Connections\TL1Connection;
 use LLENON\OltInformation\Diagnostics\FiberhomeTl1Config;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -31,5 +32,17 @@ try {
 
 putenv('IPSERVER_TL1');
 putenv('USERNAME_TL1');
+
+$connection = (new ReflectionClass(TL1Connection::class))->newInstanceWithoutConstructor();
+$loginValidator = new ReflectionMethod(TL1Connection::class, 'isSuccessfulLoginResponse');
+
+expect(
+    $loginValidator->invoke($connection, "M  CTAG COMPLD\nEN=0   ENDESC=No error"),
+    'A successful TL1 response containing "No error" must be accepted.'
+);
+expect(
+    !$loginValidator->invoke($connection, "M  CTAG DENY\nEN=5   ENDESC=Authentication error"),
+    'A denied TL1 response must be rejected.'
+);
 
 echo "Fiberhome TL1 config tests passed.\n";
