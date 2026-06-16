@@ -89,6 +89,8 @@ final class OltCliProfileRegistry
                     OltFeature::FIRMWARE_DIAGNOSTIC,
                     OltFeature::ONU_LIST,
                     OltFeature::ONU_LOOKUP,
+                    OltFeature::OPTICAL_SIGNAL,
+                    OltFeature::TEMPERATURE,
                     OltFeature::LEARNED_MACS,
                     OltFeature::REVERSE_MAC_LOOKUP,
                     OltFeature::ROUTER_MAC_DISCOVERY,

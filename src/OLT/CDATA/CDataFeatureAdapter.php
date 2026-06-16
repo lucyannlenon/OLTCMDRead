@@ -9,10 +9,12 @@ use LLENON\OltInformation\Capabilities\OltFeatureResult;
 use LLENON\OltInformation\OLT\CDATA\Command\ListAllOnuCommand;
 use LLENON\OltInformation\OLT\CDATA\Command\ListOnuMacAddressCommand;
 use LLENON\OltInformation\OLT\CDATA\Command\LocateMacAddressCommand;
+use LLENON\OltInformation\OLT\CDATA\Command\OpticalInfoCommand;
 use LLENON\OltInformation\OLT\Dto\LearnedMacAddress;
 use LLENON\OltInformation\OLT\Dto\MacLocation;
 use LLENON\OltInformation\OLT\Dto\Onu;
 use LLENON\OltInformation\OLT\Dto\OnuIdentity;
+use LLENON\OltInformation\OLT\Dto\OnuOpticalMetrics;
 use LLENON\OltInformation\OLT\Utils\Discovery\OnuRouterMacDiscovery;
 use LLENON\OltInformation\OLT\Utils\Feature\AbstractOltFeatureProvider;
 use LLENON\OltInformation\OltInterfaces\OnuDiagnosticsInterface;
@@ -34,6 +36,8 @@ final readonly class CDataFeatureAdapter extends AbstractOltFeatureProvider impl
         parent::__construct([
             OltFeature::ONU_LIST,
             OltFeature::ONU_LOOKUP,
+            OltFeature::OPTICAL_SIGNAL,
+            OltFeature::TEMPERATURE,
             OltFeature::LEARNED_MACS,
             OltFeature::REVERSE_MAC_LOOKUP,
             OltFeature::ROUTER_MAC_DISCOVERY,
@@ -75,7 +79,23 @@ final readonly class CDataFeatureAdapter extends AbstractOltFeatureProvider impl
 
     public function opticalMetrics(OnuIdentity $onu): OltFeatureResult
     {
-        return $this->unsupported(OltFeature::OPTICAL_SIGNAL);
+        $info = (new OpticalInfoCommand($this->connection))->execute($onu->pon, (int) $onu->onuId);
+        $rxPower = $this->number($info?->rxOpticalPower);
+
+        if ($rxPower === null) {
+            return OltFeatureResult::unavailable(OltFeature::OPTICAL_SIGNAL, 'OPTICAL_UNAVAILABLE');
+        }
+
+        return OltFeatureResult::supported(
+            OltFeature::OPTICAL_SIGNAL,
+            new OnuOpticalMetrics(
+                $rxPower,
+                $this->number($info?->txOpticalPower),
+                $this->number($info?->temperature),
+                $this->number($info?->voltage),
+                $this->number($info?->laserBiasCurrent)
+            )
+        );
     }
 
     public function ethernetStatus(OnuIdentity $onu, int $port = 1): OltFeatureResult
@@ -138,5 +158,12 @@ final readonly class CDataFeatureAdapter extends AbstractOltFeatureProvider impl
             MacLocation::normalizeMacAddress($onu->getGponId()),
             $onu->getState()
         );
+    }
+
+    private function number(?string $value): ?float
+    {
+        return is_string($value) && preg_match('/-?\d+(?:\.\d+)?/', $value, $matches) === 1
+            ? (float) $matches[0]
+            : null;
     }
 }
