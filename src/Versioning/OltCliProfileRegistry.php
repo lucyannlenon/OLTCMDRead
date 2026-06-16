@@ -170,7 +170,7 @@ final class OltCliProfileRegistry
             new OltCliProfileDefinition(
                 OltCliProfile::VSOL_EPON_CLI_V1,
                 OltModel::VSOL,
-                ['V1.01.51_230922190137'],
+                ['V1.01.51_230922190137', 'V1.01.51_220318155431'],
                 'telnet',
                 23,
                 'device',
