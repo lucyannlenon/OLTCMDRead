@@ -26,7 +26,7 @@ final class OpticalInfoCommand
 
         $address = PonAddress::fromString($pon);
         $response = $this->connection->exec(
-            "show ont optical-info {$address->port} {$onuId}"
+            "show ont optical-info {$address->frameSlot()} {$address->port} {$onuId}"
         );
         $results = $response === false ? [] : $this->parser->parse($response);
 
