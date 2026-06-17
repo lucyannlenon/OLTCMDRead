@@ -12,6 +12,10 @@
     use Meklis\Network\Console\SSH;
     use Meklis\Network\Console\Telnet;
 
+    /**
+     * @deprecated Legacy adapter. Use the versioned layer (CDataFeatureAdapter /
+     *             OLT\CDATA\Command\*) instead.
+     */
     class CDATAOLTCmd implements OnuDataInterface
     {
 
@@ -42,7 +46,7 @@
 
             $conn = OltModel::getSerive($oltModel->serviceCommunication);
             $conn->setDeviceHelper(OltModel::getHelper($oltModel->model));
-            $conn->connect("{$oltModel->ip}:{$oltModel->port}");
+            $conn->connect($oltModel->ip, $oltModel->port);
             $conn->login($oltModel->userName, $oltModel->password);
             $conn->exec("enable");
             $conn->exec("config");

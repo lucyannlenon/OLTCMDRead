@@ -17,6 +17,10 @@ use LLENON\OltInformation\OLT\VSOL\GPON\Connection\VSolGponConnection;
 use LLENON\OltInformation\OLT\VSOL\GPON\Connection\VSolGponConnectionInterface;
 use LLENON\OltInformation\Versioning\OltCliProfileRegistry;
 
+/**
+ * @deprecated Legacy adapter. Use the versioned layer (VSolGponFeatureAdapter /
+ *             OLT\VSOL\GPON\Command\*) instead.
+ */
 class VSolOLTGPONCmd implements OnuDataInterface
 {
     private VSolGponConnectionInterface $connection;

@@ -15,6 +15,10 @@
     use Meklis\Network\Console\SSH;
     use Meklis\Network\Console\Telnet;
 
+    /**
+     * @deprecated Legacy adapter. Use the versioned layer under
+     *             LLENON\OltInformation\OLT\DATACOM\* instead.
+     */
     class DATACOMOLTCmd implements OnuDataInterface
     {
 

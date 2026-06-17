@@ -14,6 +14,10 @@ use LLENON\OltInformation\OLT\VSOL\EPON\Connection\VSolEponConnection;
 use LLENON\OltInformation\OLT\VSOL\EPON\Connection\VSolEponConnectionInterface;
 use LLENON\OltInformation\Versioning\OltCliProfileRegistry;
 
+/**
+ * @deprecated Legacy adapter. Use the versioned layer (VSolEponFeatureAdapter /
+ *             OLT\VSOL\EPON\Command\*) instead.
+ */
 class VSolOLTCmd implements OnuDataInterface
 {
     private VSolEponConnectionInterface $connection;

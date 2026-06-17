@@ -12,6 +12,10 @@
     use LLENON\OltInformation\OltInterfaces;
     use Meklis\Network\Console\Telnet;
 
+    /**
+     * @deprecated Legacy adapter. Use the versioned layer under
+     *             LLENON\OltInformation\OLT\Fiberhome\* instead.
+     */
     class OltFiberHomeCmd implements OltInterfaces\OnuDataInterface
     {
 

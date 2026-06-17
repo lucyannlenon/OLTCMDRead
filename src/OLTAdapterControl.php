@@ -8,6 +8,10 @@
     use LLENON\OltInformation\OltInterfaces\OnuDataInterface;
     use RuntimeException;
 
+    /**
+     * @deprecated Legacy entry point. Use the versioned feature adapters
+     *             (e.g. CDataFeatureAdapter) under LLENON\OltInformation\OLT\*.
+     */
     class OLTAdapterControl implements OnuDataInterface
     {
         private OLT $OLT;

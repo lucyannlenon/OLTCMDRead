@@ -51,6 +51,35 @@ class CDATAConnection implements ConnectionInterface
         }
     }
 
+    /**
+     * Runs a command inside the "interface epon <frame/slot>" context and then
+     * returns to global config mode. Some CDATA EPON read commands (e.g.
+     * "show ont optical-info <port> <onu-id>") only exist within this context;
+     * the absolute form in config mode is rejected with "Unknown command".
+     */
+    public function execInEponInterface(string $frameSlot, string $cmd): string|bool
+    {
+        $this->ensureInitialized();
+
+        try {
+            $this->enterEponInterface($frameSlot);
+            $result = $this->executeCommand($cmd);
+            $this->leaveEponInterface();
+
+            return $result;
+        } catch (\RuntimeException $exception) {
+            // A desync during a context switch leaves the prompt ambiguous,
+            // so the session is dropped and reinitialized on the next call.
+            $this->disconnect();
+
+            throw new \RuntimeException(
+                "CDATA SSH failed running '{$cmd}' inside 'interface epon {$frameSlot}'.",
+                0,
+                $exception
+            );
+        }
+    }
+
     public function setTimeout(int $timeout): void
     {
         $this->timeout = $timeout;
@@ -136,6 +165,24 @@ class CDATAConnection implements ConnectionInterface
         $ssh->write("$cmd\n");
         $read = $this->read($ssh, $expectedPromptPattern);
         $this->updatePrompt($read);
+    }
+
+    private function enterEponInterface(string $frameSlot): void
+    {
+        $this->executeModeCommand(
+            "interface epon {$frameSlot}",
+            '~(?:^|\r?\n)([^\r\n]*\(config-interface-epon-'
+            . preg_quote($frameSlot, '~')
+            . '\)#)\s*$~'
+        );
+    }
+
+    private function leaveEponInterface(): void
+    {
+        $this->executeModeCommand(
+            'exit',
+            '~(?:^|\r?\n)([^\r\n]*\(config\)#)\s*$~'
+        );
     }
 
     private function executeCommand(string $cmd): string|bool
