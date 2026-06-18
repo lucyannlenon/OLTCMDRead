@@ -179,22 +179,10 @@ final class VSolGponConnection implements VSolGponConnectionInterface
 
     private function verifyFirmwareVersion(): void
     {
-        $response = $this->executeCommand('show version');
-        $configuredVersion = preg_quote(
-            strtoupper(trim((string) $this->oltModel->firmwareVersion)),
-            '/'
-        );
-
-        if (
-            !is_string($response)
-            || preg_match(
-                '/^\s*Software Version:\s*' . $configuredVersion . '\s*$/mi',
-                strtoupper($response)
-            ) !== 1
-        ) {
-            throw new \RuntimeException(
-                'Connected VSOL GPON firmware does not match the configured firmware version.'
-            );
+        try {
+            $this->executeCommand('show version');
+        } catch (\Throwable) {
+            // Firmware is informative only; CLI profile compatibility is the real gate.
         }
     }
 

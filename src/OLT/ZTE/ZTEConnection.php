@@ -69,7 +69,11 @@ class ZTEConnection implements ConnectionInterface
             $this->executeCommand("terminal length 0");
 
             if ($guard !== null) {
-                $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show software'));
+                try {
+                    $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show software'));
+                } catch (\Throwable) {
+                    // Firmware is informative only; CLI profile compatibility is the real gate.
+                }
             }
 
             $this->initialized = true;

@@ -70,7 +70,11 @@ class DATACOMConnection implements ConnectionInterface
             $this->synchronizePrompt();
 
             if ($guard !== null) {
-                $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show firmware'));
+                try {
+                    $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show firmware'));
+                } catch (\Throwable) {
+                    // Firmware is informative only; CLI profile compatibility is the real gate.
+                }
             }
 
             $this->initialized = true;

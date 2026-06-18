@@ -24,10 +24,6 @@ final readonly class OltCliProfileDefinition
             throw new \InvalidArgumentException('OLT CLI profile ID and model are required.');
         }
 
-        if ($this->requiresFirmware && $this->firmwareVersions === []) {
-            throw new \InvalidArgumentException('An OLT CLI profile requires at least one firmware version.');
-        }
-
         if (!in_array($transport, ['ssh', 'telnet', 'tl1'], true)) {
             throw new \InvalidArgumentException("Unsupported OLT profile transport '{$transport}'.");
         }

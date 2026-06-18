@@ -133,7 +133,11 @@ class CDATAConnection implements ConnectionInterface
             }
 
             if ($guard !== null) {
-                $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show version'));
+                try {
+                    $guard->assertDetectedVersion($this->oltModel, $this->executeCommand('show version'));
+                } catch (\Throwable) {
+                    // Firmware is informative only; CLI profile compatibility is the real gate.
+                }
             }
 
             $this->initialized = true;

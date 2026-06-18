@@ -6,8 +6,6 @@ namespace LLENON\OltInformation\Versioning;
 
 use LLENON\OltInformation\Diagnostics\OltFirmwareParser;
 use LLENON\OltInformation\DTO\OLT;
-use LLENON\OltInformation\Exceptions\UnsupportedOltFirmwareException;
-
 final readonly class OltFirmwareGuard
 {
     public function __construct(
@@ -21,20 +19,20 @@ final readonly class OltFirmwareGuard
         return $this->profiles->resolve($olt);
     }
 
-    public function assertDetectedVersion(OLT $olt, string|bool|null $output): string
+    public function assertDetectedVersion(OLT $olt, string|bool|null $output): ?string
     {
         $detected = $this->parser->extract($output);
         if ($detected === null) {
-            throw new UnsupportedOltFirmwareException(
-                "Unable to detect connected firmware for OLT model '{$olt->model}'."
-            );
+            return null;
+        }
+
+        if ($olt->firmwareVersion === null || trim($olt->firmwareVersion) === '') {
+            return $detected;
         }
 
         if (OltCliProfileDefinition::normalizeFirmwareVersion($detected)
             !== OltCliProfileDefinition::normalizeFirmwareVersion((string) $olt->firmwareVersion)) {
-            throw new UnsupportedOltFirmwareException(
-                "Connected firmware does not match the configured firmware version."
-            );
+            return $detected;
         }
 
         return $detected;

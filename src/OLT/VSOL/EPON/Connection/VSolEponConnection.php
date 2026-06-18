@@ -188,22 +188,10 @@ final class VSolEponConnection implements VSolEponConnectionInterface
 
     private function verifyFirmwareVersion(): void
     {
-        $response = $this->executeCommand('show version');
-        $configured = preg_quote(
-            strtoupper(trim((string) $this->oltModel->firmwareVersion)),
-            '/'
-        );
-
-        if (
-            !is_string($response)
-            || preg_match(
-                '/^\s*Software Version:\s*' . $configured . '\s*$/mi',
-                strtoupper($response)
-            ) !== 1
-        ) {
-            throw new \RuntimeException(
-                'Connected VSOL EPON firmware does not match the configured firmware version.'
-            );
+        try {
+            $this->executeCommand('show version');
+        } catch (\Throwable) {
+            // Firmware is informative only; CLI profile compatibility is the real gate.
         }
     }
 

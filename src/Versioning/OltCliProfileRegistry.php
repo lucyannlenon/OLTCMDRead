@@ -7,9 +7,8 @@ use LLENON\OltInformation\DTO\OLT;
 use LLENON\OltInformation\Enum\OltCliProfile;
 use LLENON\OltInformation\Enum\OltModel;
 use LLENON\OltInformation\Exceptions\IncompatibleOltCliProfileException;
-use LLENON\OltInformation\Exceptions\MissingOltVersionConfigurationException;
 use LLENON\OltInformation\Exceptions\UnknownOltCliProfileException;
-use LLENON\OltInformation\Exceptions\UnsupportedOltFirmwareException;
+use LLENON\OltInformation\Exceptions\MissingOltVersionConfigurationException;
 
 final class OltCliProfileRegistry
 {
@@ -44,19 +43,6 @@ final class OltCliProfileRegistry
         if ($profile->model !== $olt->model) {
             throw new IncompatibleOltCliProfileException(
                 "OLT CLI profile '{$profile->id}' does not support model '{$olt->model}'."
-            );
-        }
-
-        if ($profile->requiresFirmware
-            && ($olt->firmwareVersion === null || trim($olt->firmwareVersion) === '')) {
-            throw new MissingOltVersionConfigurationException(
-                "Firmware version is required for OLT model {$olt->model}."
-            );
-        }
-
-        if (!$profile->supportsFirmware((string) $olt->firmwareVersion)) {
-            throw new UnsupportedOltFirmwareException(
-                "Firmware '{$olt->firmwareVersion}' is not homologated for CLI profile '{$profile->id}'."
             );
         }
 
