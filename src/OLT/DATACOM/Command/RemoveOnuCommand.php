@@ -51,6 +51,7 @@ no onu %s
 exit
 no service-port %s
 commit
+exit
 EOF;
         $cmd = sprintf($command, $this->pon, $this->onuId, $this->servicePortId);
         return $cmd;
