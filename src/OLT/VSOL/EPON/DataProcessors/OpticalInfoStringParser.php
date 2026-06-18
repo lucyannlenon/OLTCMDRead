@@ -13,7 +13,7 @@ final class OpticalInfoStringParser implements StringParserInterface
 
         foreach (preg_split('/\R/', $input) ?: [] as $line) {
             if (!preg_match(
-                '/^\s*EPON0\/\d+:\d+\s+'
+                '/^\s*EPON0\/(\d+):(\d+)\s+'
                 . '(-?\d+(?:\.\d+)?)\s+'
                 . '(-?\d+(?:\.\d+)?)\s+'
                 . '(-?\d+(?:\.\d+)?)\s+'
@@ -26,11 +26,13 @@ final class OpticalInfoStringParser implements StringParserInterface
             }
 
             $results[] = new OpticalInfo(
-                $matches[1],
-                $matches[2],
+                (int) $matches[1],
+                (int) $matches[2],
                 $matches[3],
                 $matches[4],
-                $matches[5]
+                $matches[5],
+                $matches[6],
+                $matches[7]
             );
         }
 

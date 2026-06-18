@@ -20,7 +20,13 @@ final class OpticalInfoCommand
         $response = $this->connection->exec("show onu opm-diag pon {$pon},{$onuId}");
         $results = $response === false ? [] : $this->parser->parse($response);
 
-        return $results[0] ?? null;
+        foreach ($results as $result) {
+            if ($result->pon === $pon && $result->onuId === $onuId) {
+                return $result;
+            }
+        }
+
+        return null;
     }
 
     private static function validateAddress(int $pon, int $onuId): void
