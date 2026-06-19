@@ -12,8 +12,9 @@ values can still be `unavailable` for an offline ONU.
 
 Fiberhome is limited to the configured shared TL1 gateway. Gateway access and
 authentication were validated for all four configured Fiberhome OLTs on
-June 15, 2026. Firmware and learned-MAC features remain unsupported until
-reliable TL1 queries are confirmed.
+June 15, 2026. Firmware remains unsupported. Per-ONU learned-MAC lookup is now
+validated through `LST-PORTMACADDRESS`, while reverse MAC lookup and router MAC
+discovery remain unsupported.
 
 See [Fiberhome TL1 homologation](fiberhome-tl1-homologation.md) for the
 validation result and current limitations.
@@ -33,6 +34,6 @@ validation result and current limitations.
 | ethernet_speed | unsupported | unsupported | unsupported | unsupported | unsupported | supported |
 | vlan | unsupported | supported | supported | supported | unsupported | unsupported |
 | unauthorized_onus | unsupported | supported | supported | supported | unsupported | unsupported |
-| learned_macs | supported | supported | supported | unsupported | supported | supported |
+| learned_macs | supported | supported | supported | supported | supported | supported |
 | reverse_mac_lookup | supported | supported | supported | unsupported | supported | supported |
 | router_mac_discovery | supported | supported | supported | unsupported | supported | supported |

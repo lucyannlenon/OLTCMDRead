@@ -14,6 +14,7 @@ use LLENON\OltInformation\OLT\Dto\OnuOpticalMetrics;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\DistanceOnuCommand;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\EtherStateOnuCommand;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListAllOnuCommand;
+use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListOnuMacAddressCommand;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\ListUnAuthorizationOnu;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\SignalOnuCommand;
 use LLENON\OltInformation\OLT\Fiberhome\Command\TL1\TemperatureOnuCommand;
@@ -49,6 +50,7 @@ final readonly class FiberhomeFeatureAdapter extends AbstractOltFeatureProvider 
             OltFeature::ETHERNET_STATE,
             OltFeature::VLAN,
             OltFeature::UNAUTHORIZED_ONUS,
+            OltFeature::LEARNED_MACS,
         ]);
         $this->listOnu = new ListAllOnuCommand($connection);
         $this->listUnauthorized = new ListUnAuthorizationOnu($connection);
@@ -131,7 +133,10 @@ final readonly class FiberhomeFeatureAdapter extends AbstractOltFeatureProvider 
 
     public function learnedMacs(OnuIdentity $onu): OltFeatureResult
     {
-        return $this->unsupported(OltFeature::LEARNED_MACS);
+        return OltFeatureResult::supported(
+            OltFeature::LEARNED_MACS,
+            (new ListOnuMacAddressCommand($this->connection))->execute($onu->pon, $onu->registrationId)
+        );
     }
 
     public function locateMac(string $macAddress): OltFeatureResult

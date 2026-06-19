@@ -152,6 +152,7 @@ final class OltCliProfileRegistry
                     OltFeature::ETHERNET_STATE,
                     OltFeature::VLAN,
                     OltFeature::UNAUTHORIZED_ONUS,
+                    OltFeature::LEARNED_MACS,
                 ],
                 false
             ),

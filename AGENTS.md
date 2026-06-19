@@ -36,3 +36,5 @@
 
 - Never commit real credentials, IPs, or keys. Use placeholders in examples (`xxx`, `192.168.x.x`).
 - Be careful with SSH/telnet connections: document required PHP extensions (e.g., `ext-ssh2`) and keep connection defaults explicit.
+- Fiberhome TL1 local credentials may exist in `.env.local`; treat that file as local-only and never commit or echo its secrets.
+- For Fiberhome manual checks, prefer the existing example script `examples/FIBERHOME.php` and a local test OLT config under `examples/config/olts`.

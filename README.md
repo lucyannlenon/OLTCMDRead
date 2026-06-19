@@ -48,6 +48,19 @@ export USERNAME_TL1='usuario'
 export PASSWORD_TL1='senha'
 ```
 
+Em ambientes locais, essas credenciais tambem podem estar em `.env.local`.
+Esse arquivo deve permanecer fora do Git e nunca deve ser copiado para a
+documentacao ou para exemplos commitados.
+
+Para testes manuais de Fiberhome, use o exemplo existente:
+
+```bash
+php examples/FIBERHOME.php
+```
+
+O exemplo espera uma OLT Fiberhome de teste configurada localmente, como os
+arquivos em `examples/config/olts`.
+
 O perfil DATACOM agrupa as tres versoes homologadas porque os equipamentos
 responderam ao mesmo conjunto de comandos e ao mesmo formato de parser. O
 comando confirmado para detectar firmware e `show firmware`.

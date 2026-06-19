@@ -22,6 +22,14 @@ export USERNAME_TL1='usuario'
 export PASSWORD_TL1='senha'
 ```
 
+Em ambiente local, esses valores tambem podem existir em `.env.local`. Esse
+arquivo deve permanecer fora do Git e nao deve ser copiado para a
+documentacao, exemplos commitados ou saidas de diagnostico.
+
+Para testes manuais e probes ad hoc, use o exemplo `examples/FIBERHOME.php`
+como ponto de partida e uma OLT Fiberhome de teste configurada localmente em
+`examples/config/olts`.
+
 ## Resultado da validacao
 
 O probe somente leitura foi executado sequencialmente nas quatro OLTs:
@@ -69,3 +77,45 @@ Essa regressao e coberta por `tests/fiberhome_tl1_config_test.php`.
   roteador continuam sem suporte confirmado via TL1.
 - Listagem, status, sinal, temperatura, distancia, Ethernet, VLAN e ONUs nao
   autorizadas permanecem no perfil para validacao operacional por ONU.
+
+## Atualizacao de 19 de junho de 2026
+
+Foi adicionada a implementacao local do comando `ListOnuMacAddressCommand`
+para Fiberhome, com parser tolerante e teste isolado em Docker.
+
+A ONU `ZTEGd9872298` foi confirmada online na OLT `002 MUTUM FIBERHOME 1`
+(`10.99.99.66`), no `PONID=NA-NA-15-2`, e serviu como alvo real para a
+homologacao somente leitura.
+
+Consultas confirmadas:
+
+```text
+LST-ONUSTATE::OLTID=10.99.99.66,PONID=NA-NA-15-2,ONUIDTYPE=MAC,ONUID=ZTEGd9872298:CTAG::;
+LST-ONULANINFO::OLTID=10.99.99.66,PONID=NA-NA-15-2,ONUIDTYPE=MAC,ONUID=ZTEGd9872298:CTAG::;
+LST-PORTVLAN::OLTID=10.99.99.66,PONID=NA-NA-15-2,ONUIDTYPE=MAC,ONUID=ZTEGd9872298,ONUPORT=NA-NA-NA-1:CTAG::;
+LST-PORTMACADDRESS::OLTID=10.99.99.66,PONID=NA-NA-15-2,ONUIDTYPE=MAC,ONUID=ZTEGd9872298,PORTID=NA-NA-NA-1,VLAN=100:CTAG::;
+```
+
+Os verbos `LST-MAC`, `LST-ONUMAC` e `LST-MACADDR` foram descartados com
+`DENY / invalid parameter format`.
+
+Resposta vazia homologada para a tabela de MACs:
+
+```text
+M  CTAG COMPLD
+total_blocks=1
+block_number=1
+block_records=0
+
+List of mac address
+--------------------------------------------------------------------------------
+VLAN  MAC
+--------------------------------------------------------------------------------
+```
+
+Com isso, `learned_macs` passa a ser suportado para Fiberhome. Ainda falta uma
+captura real com uma ou mais MACs aprendidas para enriquecer o parser com
+evidencia positiva, mas o comando e a resposta vazia ja estao confirmados.
+
+`reverse_mac_lookup` e `router_mac_discovery` continuam sem suporte confirmado
+via TL1.
