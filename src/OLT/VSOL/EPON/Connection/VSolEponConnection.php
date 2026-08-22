@@ -375,8 +375,8 @@ final class VSolEponConnection implements VSolEponConnectionInterface
 
     private static function validatePon(int $pon): void
     {
-        if ($pon < 1 || $pon > 4) {
-            throw new \InvalidArgumentException('VSOL EPON PON must be between 1 and 4.');
+        if ($pon < 1 || $pon > 8) {
+            throw new \InvalidArgumentException('VSOL EPON PON must be between 1 and 8.');
         }
     }
 }

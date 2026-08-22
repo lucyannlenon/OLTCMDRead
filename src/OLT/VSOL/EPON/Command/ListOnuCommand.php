@@ -19,8 +19,8 @@ final class ListOnuCommand
     /** @return array<Onu> */
     public function execute(?int $pon = null): array
     {
-        if ($pon !== null && ($pon < 1 || $pon > 4)) {
-            throw new \InvalidArgumentException('VSOL EPON PON must be between 1 and 4.');
+        if ($pon !== null && ($pon < 1 || $pon > 8)) {
+            throw new \InvalidArgumentException('VSOL EPON PON must be between 1 and 8.');
         }
 
         $suffix = $pon === null ? 'all' : "pon {$pon},all";

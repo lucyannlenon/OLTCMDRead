@@ -45,4 +45,44 @@ expect(
     'A denied TL1 response must be rejected.'
 );
 
+$reflection = new ReflectionClass(TL1Connection::class);
+$socketProperty = $reflection->getProperty('fp');
+$cacheProperty = $reflection->getProperty('cache');
+$cacheTtlProperty = $reflection->getProperty('cacheTtlSeconds');
+$debugProperty = $reflection->getProperty('debug');
+
+$sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
+expect(is_array($sockets), 'Could not create TL1 socket pair for transport test.');
+$completeConnection = $reflection->newInstanceWithoutConstructor();
+$socketProperty->setValue($completeConnection, $sockets[0]);
+$cacheProperty->setValue($completeConnection, []);
+$cacheTtlProperty->setValue($completeConnection, 3);
+$debugProperty->setValue($completeConnection, false);
+fwrite($sockets[1], "M  CTAG COMPLD\nEN=0\n;");
+expect(
+    str_contains($completeConnection->exec('TEST'), 'COMPLD'),
+    'A terminated TL1 response must be returned.'
+);
+fclose($sockets[1]);
+$socketProperty->setValue($completeConnection, null);
+
+$sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, 0);
+expect(is_array($sockets), 'Could not create incomplete TL1 socket pair.');
+$incompleteConnection = $reflection->newInstanceWithoutConstructor();
+$socketProperty->setValue($incompleteConnection, $sockets[0]);
+$cacheProperty->setValue($incompleteConnection, []);
+$cacheTtlProperty->setValue($incompleteConnection, 3);
+$debugProperty->setValue($incompleteConnection, false);
+fwrite($sockets[1], "M  CTAG COMPLD\nEN=0");
+stream_socket_shutdown($sockets[1], STREAM_SHUT_WR);
+$incompleteFailed = false;
+try {
+    $incompleteConnection->exec('TEST');
+} catch (RuntimeException $exception) {
+    $incompleteFailed = true;
+    expect(str_contains($exception->getMessage(), 'incomplete'), 'Unexpected TL1 transport error.');
+}
+expect($incompleteFailed, 'An incomplete TL1 response must fail.');
+$socketProperty->setValue($incompleteConnection, null);
+
 echo "Fiberhome TL1 config tests passed.\n";

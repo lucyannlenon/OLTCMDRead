@@ -81,13 +81,43 @@ class TL1Connection implements ConnectionInterface
             }
         }
 
+        $terminated = false;
         while (true) {
             $c = fread($this->fp, 1);
-            if ($c === false || $c === ';' || feof($this->fp)) {
+            if ($c === false) {
+                $metadata = stream_get_meta_data($this->fp);
+                throw new \RuntimeException(
+                    ($metadata['timed_out'] ?? false)
+                        ? 'TL1 response timed out or was incomplete.'
+                        : 'TL1 response was incomplete: terminator not received.'
+                );
+            }
+
+            if ($c === ';') {
+                $terminated = true;
                 break;
             }
-            $lin = trim($c . fgets($this->fp));
-            $ret[] = $lin;
+
+            $line = fgets($this->fp);
+            if ($line === false) {
+                throw new \RuntimeException('TL1 response was incomplete: terminator not received.');
+            }
+
+            $record = $c . $line;
+            $terminatorPosition = strpos($record, ';');
+            if ($terminatorPosition !== false) {
+                $record = substr($record, 0, $terminatorPosition);
+                $terminated = true;
+            }
+
+            $ret[] = trim($record);
+            if ($terminated) {
+                break;
+            }
+        }
+
+        if (!$terminated) {
+            throw new \RuntimeException('TL1 response was incomplete: terminator not received.');
         }
 
         $result = implode("\n", $ret);
